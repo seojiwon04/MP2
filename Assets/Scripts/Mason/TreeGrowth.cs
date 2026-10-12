@@ -3,6 +3,11 @@ using UnityEngine.UI;
 
 public class TreeGrowth : MonoBehaviour
 {
+
+    public float chopHealth = 3f;
+
+    public GridCell currentCell;
+    public PlayerResources playerResources;
     [Header("Tree Visual")]
     public Transform treeModel;
 
@@ -23,6 +28,7 @@ public class TreeGrowth : MonoBehaviour
 
     void Start()
     {
+        playerResources = FindFirstObjectByType<PlayerResources>();
         startScale = treeModel.localScale;
 
         // Start as a small sapling
@@ -79,6 +85,38 @@ public class TreeGrowth : MonoBehaviour
         UpdateUI();
     }
 
+    
+
+    public void TakeChopDamage(float damage)
+    {
+        chopHealth -= damage;
+
+        if (chopHealth <= 0f)
+        {
+            HarvestTree();
+        }
+    }
+
+    private void HarvestTree()
+{
+    int woodAmount = Mathf.Max(
+        1,
+        Mathf.RoundToInt(growth / 20f)
+    );
+
+    if (playerResources != null)
+    {
+        playerResources.AddWood(woodAmount);
+    }
+
+    if (currentCell != null)
+    {
+        currentCell.currentObject = null;
+        currentCell.Untill();
+    }
+
+    Destroy(gameObject);
+}
     private void UpdateUI()
     {
         if (growthBar != null)

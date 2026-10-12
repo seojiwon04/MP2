@@ -59,6 +59,13 @@ public class GridCell : MonoBehaviour
 
         currentObject = tree;
 
+        TreeGrowth treeGrowth = tree.GetComponent<TreeGrowth>();
+
+        if (treeGrowth != null)
+        {
+            treeGrowth.currentCell = this;
+        }
+
         Destroy(seedObject);
     }
 
