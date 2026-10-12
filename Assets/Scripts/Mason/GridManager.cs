@@ -8,6 +8,8 @@ public class GridManager : MonoBehaviour
     public int height = 5;
     public float spacing = 1.5f;
 
+    private GridCell[,] cells;
+
     void Start()
     {
         GenerateGrid();
@@ -15,6 +17,8 @@ public class GridManager : MonoBehaviour
 
     void GenerateGrid()
     {
+        cells = new GridCell[width, height];
+
         float xOffset = (width - 1) * spacing / 2f;
         float zOffset = (height - 1) * spacing / 2f;
 
@@ -38,9 +42,20 @@ public class GridManager : MonoBehaviour
                 cellObject.name = "Cell_" + x + "_" + z;
 
                 GridCell cell = cellObject.GetComponent<GridCell>();
+
                 cell.x = x;
                 cell.z = z;
+
+                cells[x, z] = cell;
             }
         }
+    }
+
+    public GridCell GetCell(int x, int z)
+    {
+        if (x < 0 || x >= width || z < 0 || z >= height)
+            return null;
+
+        return cells[x, z];
     }
 }

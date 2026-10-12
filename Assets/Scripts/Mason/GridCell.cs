@@ -49,7 +49,7 @@ public class GridCell : MonoBehaviour
         if (!IsEmpty())
             return;
 
-        Vector3 treePosition = transform.position + Vector3.up * 0.5f;
+        Vector3 treePosition = transform.position;
 
         GameObject tree = Instantiate(
             treePrefab,
@@ -62,6 +62,23 @@ public class GridCell : MonoBehaviour
         Destroy(seedObject);
     }
 
+    public void TryPlaceSprinkler(GameObject sprinklerObject)
+    {
+        if (isTilled)
+            return;
+
+        if (!IsEmpty())
+            return;
+
+        Sprinkler sprinkler = sprinklerObject.GetComponent<Sprinkler>();
+
+        if (sprinkler == null)
+            return;
+
+        currentObject = sprinklerObject;
+
+        sprinkler.AttachToCell(this);
+    }
     private void UpdateAppearance()
     {
         if (isTilled)
