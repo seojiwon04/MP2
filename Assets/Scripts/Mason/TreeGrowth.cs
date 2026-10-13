@@ -5,6 +5,8 @@ public class TreeGrowth : MonoBehaviour
 {
 
     public float chopHealth = 3f;
+    public GameObject logPrefab;
+    public int logCount = 3;
 
     public GridCell currentCell;
     public PlayerResources playerResources;
@@ -98,25 +100,49 @@ public class TreeGrowth : MonoBehaviour
     }
 
     private void HarvestTree()
-{
-    int woodAmount = Mathf.Max(
-        1,
-        Mathf.RoundToInt(growth / 20f)
-    );
-
-    if (playerResources != null)
     {
-        playerResources.AddWood(woodAmount);
-    }
+        int logCount;
 
-    if (currentCell != null)
-    {
-        currentCell.currentObject = null;
-        currentCell.Untill();
-    }
+        if (growth < 25f)
+        {
+            logCount = 1;
+        }
+        else if (growth < 50f)
+        {
+            logCount = 2;
+        }
+        else if (growth < 75f)
+        {
+            logCount = 3;
+        }
+        else
+        {
+            logCount = 4;
+        }
 
-    Destroy(gameObject);
-}
+        for (int i = 0; i < logCount; i++)
+        {
+            Vector3 offset = new Vector3(
+                Random.Range(-0.3f, 0.3f),
+                0.5f,
+                Random.Range(-0.3f, 0.3f)
+            );
+
+            Instantiate(
+                logPrefab,
+                transform.position + offset,
+                Random.rotation
+            );
+        }
+
+        if (currentCell != null)
+        {
+            currentCell.currentObject = null;
+            currentCell.Untill();
+        }
+
+        Destroy(gameObject);
+    }
     private void UpdateUI()
     {
         if (growthBar != null)

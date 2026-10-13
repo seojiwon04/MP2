@@ -261,6 +261,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TreeGrowth
   chopHealth: 3
+  logPrefab: {fileID: 4839605501500324150, guid: e5f3a3e690ba94d48a25fc4e3847a1e3, type: 3}
+  logCount: 3
+  currentCell: {fileID: 0}
+  playerResources: {fileID: 0}
   treeModel: {fileID: 6544666651957769479}
   growth: 0
   maxGrowth: 100
