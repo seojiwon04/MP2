@@ -18,11 +18,21 @@ public class PlayerResources : MonoBehaviour
         UpdateUI();
     }
 
+    public bool SpendWood(int amount)
+    {
+        if (wood < amount)
+            return false;
+
+        wood -= amount;
+        UpdateUI();
+        return true;
+    }
+
     private void UpdateUI()
     {
         if (woodText != null)
         {
-            woodText.text = "Wood: " + wood;
+            woodText.text = "WOOD: " + wood;
         }
     }
 }
