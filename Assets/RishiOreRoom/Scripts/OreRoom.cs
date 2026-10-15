@@ -5,7 +5,7 @@ public class OreRoom : MonoBehaviour {
     public bool spawnTestPlayer = true;
     [Header("Player Controls")]
     [Tooltip("Checked: keyboard/mouse desktop rig. Unchecked: tracked VR rig. Set before Play or before building for Quest.")]
-    public bool useDesktopControls = true;
+    public bool useDesktopControls = false;
     public Vector3 spawn = new Vector3(0,.1f,-3.7f);
     public int randomSeed = 417;
     public OrePlayer player;
