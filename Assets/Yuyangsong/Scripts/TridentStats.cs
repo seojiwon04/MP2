@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TridentStats : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class TridentStats : MonoBehaviour
     public float maxSharpness = 1f;
 
     public float sharpnessLoss = 0.1f;
+
+    public Slider sharpnessSlider;
 
     void OnTriggerEnter(Collider other)
     {
@@ -28,5 +31,10 @@ public class TridentStats : MonoBehaviour
     public void Sharpen(float amount)
     {
         sharpness = Mathf.Min(maxSharpness, sharpness + amount);
+    }
+
+    public void Update()
+    {
+        sharpnessSlider.value = sharpness;
     }
 }

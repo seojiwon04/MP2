@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FishingLiftNet : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class FishingLiftNet : MonoBehaviour
     public float sharkWeight;
     public float catchRate = 2f;
     [Range(0f, 1f)] public float sharkChance = 0.2f;
+
+    public Slider catchWeightSlider;
+    public Slider durabilitySlider;
 
     void Update()
     {
@@ -32,6 +36,9 @@ public class FishingLiftNet : MonoBehaviour
             sharkWeight += caught;
         else
             fishWeight += caught;
+
+        catchWeightSlider.value = (fishWeight + sharkWeight) / capacity;
+        durabilitySlider.value = durability / maxDurability;
     }
 
     public void CollectFish()
