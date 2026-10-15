@@ -27,15 +27,16 @@ public class FishingLiftNet : MonoBehaviour
         }
 
         float remaining = capacity - fishWeight - sharkWeight;
-        if (remaining <= 0f)
-            return;
+        
+        if (remaining > 0f)
+        {
+            float caught = Mathf.Min(catchRate * Time.deltaTime, remaining);
 
-        float caught = Mathf.Min(catchRate * Time.deltaTime, remaining);
-
-        if (Random.value < sharkChance)
-            sharkWeight += caught;
-        else
-            fishWeight += caught;
+            if (Random.value < sharkChance)
+                sharkWeight += caught;
+            else
+                fishWeight += caught;
+        }
 
         catchWeightSlider.value = (fishWeight + sharkWeight) / capacity;
         durabilitySlider.value = durability / maxDurability;
