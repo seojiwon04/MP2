@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TutorialPopup : MonoBehaviour
+public class FishingTutorialPopup : MonoBehaviour
 {
     public GameObject tutorialPanel;
 
