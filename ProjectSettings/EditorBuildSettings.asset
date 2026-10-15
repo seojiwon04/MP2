@@ -9,9 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/YuyangsongScene.unity
-    guid: ef28468bd7ec27c49817a081360100db
+    path: Assets/Scenes/MasonScene.unity
+    guid: 8d9b177bbec4532478f03cd3a1fb30a4
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 7cbb5babd05790e4b81dd20cf8bcd343, type: 2}
-    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: bfd80fa9142ae704cbb429b54e052291, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 0580080a51416dd4087251fb07dd379d, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 9fe49e8df3e1ee44f81d294dfed099d4, type: 2}
