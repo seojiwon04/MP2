@@ -1,7 +1,7 @@
 fileFormatVersion: 2
-guid: d18e2489dbe0cfb42bf87fe7a1b7b646
+guid: 6106c742c958a55468b520ae5fcaff89
 ModelImporter:
-  serializedVersion: 24501
+  serializedVersion: 22200
   internalIDToNameTable: []
   externalObjects: {}
   materials:
@@ -9,7 +9,6 @@ ModelImporter:
     materialName: 0
     materialSearch: 1
     materialLocation: 1
-    searchTexturesGlobally: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -57,11 +56,6 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
-    generateMeshLods: 0
-    meshLodGenerationFlags: 0
-    maximumMeshLod: -1
-    importUVs: -1
-    importVertexColors: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -81,7 +75,6 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-    calculateBlendshapeNormalsDeltaFromImportedNormals: 0
   referencedClips: []
   importAnimation: 1
   humanDescription:
@@ -112,3 +105,10 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 306153
+  packageName: Low Poly Tropical Beach
+  packageVersion: 1.0.0
+  assetPath: Assets/Aquaset/LowPolyTropicalBeach/Models/PalmTree3.obj
+  uploadId: 719796
