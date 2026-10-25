@@ -1,9 +1,9 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 namespace SheepFarm
 {
-    // Lives on the right controller. Trigger fills from the pond or sprays droplets.
+    // Pick it up from the Trading Post. Trigger fills from the pond or sprays droplets.
     public class WateringCan : MonoBehaviour
     {
         public GameObject dropletPrefab;
@@ -13,17 +13,22 @@ namespace SheepFarm
         public float sprayAngle = 35;
         public float rayLength = 4;
 
-        InputAction trigger;
+        XRGrabInteractable grab;
+        Collider canCollider;
         Transform tilt;
         Transform spout;
         Transform gaugePivot;
         LineRenderer ray;
         float sprayTimer;
+        bool triggerHeld;
 
         void Start()
         {
-            trigger = new InputAction("Can Trigger", InputActionType.Value, "<XRController>{RightHand}/trigger");
-            trigger.Enable();
+            grab = GetComponent<XRGrabInteractable>();
+            grab.activated.AddListener(args => triggerHeld = true);
+            grab.deactivated.AddListener(args => triggerHeld = false);
+            grab.selectExited.AddListener(args => triggerHeld = false);
+            canCollider = GetComponent<Collider>();
             tilt = transform.Find("Tilt");
             spout = transform.Find("Tilt/Model/Spout");
             gaugePivot = transform.Find("GaugePivot");
@@ -33,9 +38,10 @@ namespace SheepFarm
         void Update()
         {
             PlayerResources res = PlayerResources.Instance;
-            bool pressed = trigger.ReadValue<float>() > 0.5f;
+            bool held = grab.isSelected;
+            bool pressed = held && triggerHeld;
 
-            // Aim ray: turns blue when pointing at the pond.
+            // Aim ray (only while held): turns blue when pointing at the pond.
             Pond pond = null;
             Vector3 end = spout.position + spout.forward * rayLength;
             if (Physics.Raycast(spout.position, spout.forward, out RaycastHit hit, rayLength))
@@ -43,6 +49,7 @@ namespace SheepFarm
                 end = hit.point;
                 pond = hit.collider.GetComponentInParent<Pond>();
             }
+            ray.enabled = held;
             ray.SetPosition(0, spout.position);
             ray.SetPosition(1, end);
             ray.startColor = ray.endColor = pond != null ? Color.blue : Color.white;
@@ -73,12 +80,8 @@ namespace SheepFarm
         void Spray()
         {
             GameObject drop = Instantiate(dropletPrefab, spout.position, Quaternion.identity);
+            Physics.IgnoreCollision(drop.GetComponent<Collider>(), canCollider); // don't splash on the can itself
             drop.GetComponent<Rigidbody>().linearVelocity = spout.forward * 3f + Random.insideUnitSphere * 0.3f;
-        }
-
-        void OnDestroy()
-        {
-            if (trigger != null) trigger.Dispose();
         }
     }
 }
