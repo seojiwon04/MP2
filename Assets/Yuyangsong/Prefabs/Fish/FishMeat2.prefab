@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 966182024909304449}
   - component: {fileID: 507113849213008371}
   m_Layer: 0
-  m_Name: SharkMeat
+  m_Name: FishMeat2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

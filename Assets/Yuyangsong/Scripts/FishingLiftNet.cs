@@ -5,13 +5,11 @@ public class FishingLiftNet : MonoBehaviour
 {
     public float maxDurability = 100f;
     public float durability = 100f;
-    public float durabilityLossRate = 1f;
+    public float durabilityLossRate = 0.5f;
 
-    public float capacity = 50f;
+    public float capacity = 20f;
     public float fishWeight;
-    public float sharkWeight;
-    public float catchRate = 2f;
-    [Range(0f, 1f)] public float sharkChance = 0.2f;
+    public float catchRate = 0.5f;
 
     public Slider catchWeightSlider;
     public Slider durabilitySlider;
@@ -26,19 +24,12 @@ public class FishingLiftNet : MonoBehaviour
             return;
         }
 
-        float remaining = capacity - fishWeight - sharkWeight;
-        
-        if (remaining > 0f)
-        {
-            float caught = Mathf.Min(catchRate * Time.deltaTime, remaining);
+        fishWeight = Mathf.Min(
+            capacity,
+            fishWeight + catchRate * Time.deltaTime
+        );
 
-            if (Random.value < sharkChance)
-                sharkWeight += caught;
-            else
-                fishWeight += caught;
-        }
-
-        catchWeightSlider.value = (fishWeight + sharkWeight) / capacity;
+        catchWeightSlider.value = fishWeight / capacity;
         durabilitySlider.value = durability / maxDurability;
     }
 
@@ -48,11 +39,8 @@ public class FishingLiftNet : MonoBehaviour
         if (resources == null)
             return;
 
-        resources.fishWeight += fishWeight;
-        resources.sharkWeight += sharkWeight;
-
+        resources.fishWeight += Mathf.FloorToInt(fishWeight);
         fishWeight = 0f;
-        sharkWeight = 0f;
     }
 
     public void Repair(float amount)

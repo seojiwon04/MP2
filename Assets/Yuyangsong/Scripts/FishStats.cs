@@ -7,9 +7,9 @@ public class FishStats : MonoBehaviour
     public FishType fishType = FishType.Fish;
     public float growth = 0f;
     public float growthRate = 0.02f;
-    public float baseWeight = 5f;
+    public float baseWeight = 1f;
 
-    public float Weight => baseWeight * (1f + 9f * growth);
+    public int Weight => Mathf.FloorToInt(baseWeight * (1f + 9f * growth));
 
     public bool canGrow = true;
 

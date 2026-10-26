@@ -6,9 +6,7 @@ public class FishingResources : MonoBehaviour
 
     [Header("Fish")]
     public float fishWeight;
-    public float sharkWeight;
     public float fishMeatWeight;
-    public float sharkMeatWeight;
 
     [Header("Other Resources")]
     public int coins;
@@ -22,9 +20,6 @@ public class FishingResources : MonoBehaviour
 
     public void AddFish(FishStats stats)
     {
-        if (stats.fishType == FishStats.FishType.Shark)
-            sharkWeight += stats.Weight;
-        else
-            fishWeight += stats.Weight;
+        fishWeight += stats.Weight;
     }
 }

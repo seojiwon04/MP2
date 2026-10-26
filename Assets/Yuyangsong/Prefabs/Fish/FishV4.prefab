@@ -118,8 +118,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishStats
   fishType: 0
   growth: 0
-  growthRate: 0.01
-  baseValue: 10
+  growthRate: 0.02
+  baseWeight: 1
+  canGrow: 1
 --- !u!1001 &8807702572067154759
 PrefabInstance:
   m_ObjectHideFlags: 0

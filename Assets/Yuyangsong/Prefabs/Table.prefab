@@ -105,7 +105,7 @@ MonoBehaviour:
   - {fileID: 844284081472356550, guid: d5da7071f6d893540b096210a932dfb6, type: 3}
   - {fileID: 3749206469970141183, guid: 6506eee697f162c44a175942033eaee1, type: 3}
   - {fileID: 9065839242796179346, guid: 0c9ef109d7cce2e41b540f5ea77c2be3, type: 3}
-  sharkPrefab: {fileID: 1524030312950207983, guid: 1463d65ae3ba47648981da24f2e4d584, type: 3}
+  - {fileID: 1524030312950207983, guid: 1463d65ae3ba47648981da24f2e4d584, type: 3}
   spawnPoint: {fileID: 7951204189041977560}
   currentMeat: {fileID: 0}
 --- !u!1 &6364302418350676431

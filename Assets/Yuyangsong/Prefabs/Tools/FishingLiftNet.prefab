@@ -59,11 +59,9 @@ MonoBehaviour:
   maxDurability: 100
   durability: 100
   durabilityLossRate: 0.5
-  capacity: 50
+  capacity: 20
   fishWeight: 0
-  sharkWeight: 0
-  catchRate: 1
-  sharkChance: 0.2
+  catchRate: 0.5
   catchWeightSlider: {fileID: 2388772376573239400}
   durabilitySlider: {fileID: 5098064942022408511}
 --- !u!114 &3997900198506421612
