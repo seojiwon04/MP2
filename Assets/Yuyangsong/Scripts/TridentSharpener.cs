@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TridentSharpener : MonoBehaviour
 {
-    public float sharpenAmount = 0.1f;
+    public float sharpenAmount = 0.2f;
 
     void OnTriggerEnter(Collider other)
     {

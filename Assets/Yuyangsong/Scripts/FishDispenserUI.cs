@@ -4,39 +4,28 @@ using TMPro;
 public class FishDispenserUI : MonoBehaviour
 {
     public FishDispenser dispenser;
-    public TMP_Text typeText;
     public TMP_Text weightText;
 
-    public FishStats.FishType fishType = FishStats.FishType.Fish;
-    public int weight = 10;
+    public int weight = 5;
 
     void Start()
     {
         UpdateUI();
     }
 
-    public void SwitchType()
-    {
-        fishType = fishType == FishStats.FishType.Fish
-            ? FishStats.FishType.Shark
-            : FishStats.FishType.Fish;
-        UpdateUI();
-    }
-
     public void ChangeWeight(int amount)
     {
-        weight = Mathf.Clamp(weight + amount, 0, 100);
+        weight = Mathf.Clamp(weight + amount, 1, 20);
         UpdateUI();
     }
 
     public void TakeFish()
     {
-        dispenser.TakeFish(fishType, weight);
+        dispenser.TakeFish(weight);
     }
 
     void UpdateUI()
     {
-        typeText.text = fishType.ToString();
-        weightText.text = $"{weight} / 100 kg";
+        weightText.text = $"{weight} / 20 kg";
     }
 }

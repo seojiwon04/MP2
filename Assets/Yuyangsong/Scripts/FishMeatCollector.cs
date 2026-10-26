@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class FishMeatCollector : MonoBehaviour
 {
-    public FishStats.FishType type;
     public float weight;
 
     public void Collect()
@@ -12,10 +11,7 @@ public class FishMeatCollector : MonoBehaviour
         if (resources == null)
             return;
 
-        if (type == FishStats.FishType.Fish)
-            resources.fishMeatWeight += weight;
-        else
-            resources.sharkMeatWeight += weight;
+        resources.fishMeatWeight += weight;
         
         Destroy(gameObject);
     }

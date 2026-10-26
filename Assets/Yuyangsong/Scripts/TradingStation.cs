@@ -6,15 +6,13 @@ public class TradingStation : MonoBehaviour
     public int woodStock = 20;
     public int ironStock = 20;
 
-    public int sellWeight = 5;
-    public int buyAmount = 5;
+    public int sellWeight = 1;
+    public int buyAmount = 1;
 
-    public int fishPrice = 2;
-    public int sharkPrice = 5;
-    public int fishMeatPrice = 4;
-    public int sharkMeatPrice = 10;
-    public int woodPrice = 5;
-    public int ironPrice = 10;
+    public int fishPrice = 1;
+    public int fishMeatPrice = 2;
+    public int woodPrice = 2;
+    public int ironPrice = 4;
 
     public TMP_Text woodStockText;
     public TMP_Text ironStockText;
@@ -33,28 +31,12 @@ public class TradingStation : MonoBehaviour
         r.coins += fishPrice * sellWeight;
     }
 
-    public void SellShark()
-    {
-        var r = FishingResources.Instance;
-        if (r == null || r.sharkWeight < sellWeight) return;
-        r.sharkWeight -= sellWeight;
-        r.coins += sharkPrice * sellWeight;
-    }
-
     public void SellFishMeat()
     {
         var r = FishingResources.Instance;
         if (r == null || r.fishMeatWeight < sellWeight) return;
         r.fishMeatWeight -= sellWeight;
         r.coins += fishMeatPrice * sellWeight;
-    }
-
-    public void SellSharkMeat()
-    {
-        var r = FishingResources.Instance;
-        if (r == null || r.sharkMeatWeight < sellWeight) return;
-        r.sharkMeatWeight -= sellWeight;
-        r.coins += sharkMeatPrice * sellWeight;
     }
 
     public void BuyWood()

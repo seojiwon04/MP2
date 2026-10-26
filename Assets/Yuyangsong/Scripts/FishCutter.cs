@@ -3,19 +3,13 @@ using UnityEngine;
 public class FishCutter : MonoBehaviour
 {
     public GameObject fishMeatPrefab;
-    public GameObject sharkMeatPrefab;
     public Transform spawnPoint;
     public FishDispenser dispenser;
-    public float meatRatio = 0.8f;
 
     public void CutFish(FishStats fish)
     {
-        GameObject prefab = fish.fishType == FishStats.FishType.Fish
-            ? fishMeatPrefab
-            : sharkMeatPrefab;
-
         GameObject meat = Instantiate(
-            prefab,
+            fishMeatPrefab,
             spawnPoint.position,
             spawnPoint.rotation
         );
@@ -23,8 +17,7 @@ public class FishCutter : MonoBehaviour
         dispenser.currentMeat = meat;
 
         FishMeatCollector collection = meat.GetComponent<FishMeatCollector>();
-        collection.type = fish.fishType;
-        collection.weight = fish.Weight * meatRatio;
+        collection.weight = fish.Weight;
 
         Destroy(fish.gameObject);
     }

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3016471598146784534}
   - component: {fileID: 8920150780393819847}
   m_Layer: 0
-  m_Name: FishMeat
+  m_Name: FishMeat1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -154,7 +154,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc4e13aeb1f48ce4592df225055aef2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishMeatCollector
-  type: 0
   weight: 0
 --- !u!1001 &7712297870174286374
 PrefabInstance:
