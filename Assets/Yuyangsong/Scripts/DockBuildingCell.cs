@@ -20,8 +20,12 @@ public class DockBuildingCell : MonoBehaviour
         resources.wood -= woodCost;
 
         Vector3 position = transform.position + Vector3.up * yOffset;
-        Instantiate(dockPrefab, position, transform.rotation);
+        GameObject dock = Instantiate(dockPrefab, position, transform.rotation);
 
         occupied = true;
+
+        FishingProgression.Instance.OnDockBuilt(
+            dock.GetComponentInChildren<LiftNetInstaller>()
+        );
     }
 }

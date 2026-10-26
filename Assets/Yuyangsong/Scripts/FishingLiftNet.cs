@@ -14,20 +14,26 @@ public class FishingLiftNet : MonoBehaviour
     public Slider catchWeightSlider;
     public Slider durabilitySlider;
 
+    [HideInInspector] public LiftNetInstaller sandboxOwner;
+
+    private bool collected, repaired;
+
     void Update()
     {
-        durability -= durabilityLossRate * Time.deltaTime;
+        durability = Mathf.Max(
+            0f, durability - durabilityLossRate * Time.deltaTime
+        );
 
-        if (durability <= 0f)
+        if (durability <= 0f && sandboxOwner == null)
         {
             Destroy(gameObject);
             return;
         }
 
-        fishWeight = Mathf.Min(
-            capacity,
-            fishWeight + catchRate * Time.deltaTime
-        );
+        if (durability > 0f)
+            fishWeight = Mathf.Min(
+                capacity, fishWeight + catchRate * Time.deltaTime
+            );
 
         catchWeightSlider.value = fishWeight / capacity;
         durabilitySlider.value = durability / maxDurability;
@@ -35,16 +41,36 @@ public class FishingLiftNet : MonoBehaviour
 
     public void CollectFish()
     {
-        FishingResources resources = FishingResources.Instance;
-        if (resources == null)
-            return;
+        int amount = Mathf.FloorToInt(fishWeight);
+        if (amount < 1) return;
 
-        resources.fishWeight += Mathf.FloorToInt(fishWeight);
-        fishWeight = 0f;
+        fishWeight -= amount;
+
+        if (sandboxOwner != null)
+        {
+            collected = true;
+            CheckSandbox();
+        }
+        else
+            FishingResources.Instance.fishWeight += amount;
     }
 
     public void Repair(float amount)
     {
-        durability = Mathf.Min(maxDurability, durability + amount);
+        bool wasDamaged = durability < maxDurability;
+        durability = Mathf.Clamp(durability + amount, 0f, maxDurability);
+
+        if (sandboxOwner != null && wasDamaged &&
+            durability == maxDurability)
+        {
+            repaired = true;
+            CheckSandbox();
+        }
+    }
+
+    private void CheckSandbox()
+    {
+        if (collected && repaired)
+            sandboxOwner.CompleteSandbox();
     }
 }

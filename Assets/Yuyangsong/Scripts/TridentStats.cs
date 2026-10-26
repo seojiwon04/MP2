@@ -26,6 +26,11 @@ public class TridentStats : MonoBehaviour
         }
 
         sharpness = Mathf.Max(0f, sharpness - sharpnessLoss);
+
+        if (sharpness <= 0f)
+        {
+            FishingProgression.Instance.OnTridentDepleted();
+        }
     }
 
     public void Sharpen(float amount)
