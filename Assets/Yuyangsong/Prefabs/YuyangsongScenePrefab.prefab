@@ -33,14 +33,49 @@ Transform:
   - {fileID: 4321061515027023162}
   - {fileID: 8535769367133427707}
   - {fileID: 5780039764532484501}
-  - {fileID: 7001799142941973051}
   - {fileID: 187794396826734162}
+  - {fileID: 8604464942926116153}
   - {fileID: 6918192134671324441}
   - {fileID: 6436147539687708710}
   - {fileID: 3940155826709132317}
   - {fileID: 341358012937637558}
   - {fileID: 1494214522051195001}
+  - {fileID: 747878599496319895}
+  - {fileID: 5752445085124724920}
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &543625836622633655
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8604464942926116153}
+  m_Layer: 0
+  m_Name: TradingStation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8604464942926116153
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543625836622633655}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7001799142941973051}
+  - {fileID: 704526449312650683}
+  m_Father: {fileID: 3256810729672269135}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &619954928570093026
 GameObject:
@@ -77,7 +112,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 4800, y: 2800}
+  m_SizeDelta: {x: 4000, y: 2800}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3078659501286916969
 CanvasRenderer:
@@ -107,21 +142,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Marine Life
+  m_text: 'Fish swim along underwater routes and grow over time.
 
 
 
-    Fish and sharks swim along underwater routes and grow
-    over time.
+    Catch them
+    with your trident or collect them using a lift net.
 
 
 
-    Catch them with your trident or collect them using a lift net.
-
-
-
-    Larger
-    fish provide more resources.'
+    Larger fish provide
+    more resources.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -383,6 +414,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &2916422248160889167
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 747878599496319895}
+  m_Layer: 0
+  m_Name: LiftNetSandbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &747878599496319895
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2916422248160889167}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3256810729672269135}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3033490881414718106
 GameObject:
   m_ObjectHideFlags: 0
@@ -738,9 +800,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7513696149373145150}
-  - {fileID: 427465948692131915}
   - {fileID: 3798056737927057216}
-  - {fileID: 704526449312650683}
   - {fileID: 2319260638397852411}
   m_Father: {fileID: 3256810729672269135}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1099,6 +1159,39 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &5692464344120971638
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2325184192726878872}
+  m_Layer: 0
+  m_Name: Grindstone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2325184192726878872
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5692464344120971638}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 427465948692131915}
+  - {fileID: 5779776781535346803}
+  m_Father: {fileID: 5780039764532484501}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6472110523756691290
 GameObject:
   m_ObjectHideFlags: 0
@@ -1421,6 +1514,53 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!1 &8041686387293296420
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5752445085124724920}
+  - component: {fileID: 6993095231133340477}
+  m_Layer: 0
+  m_Name: FishingProgression
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5752445085124724920
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041686387293296420}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3256810729672269135}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6993095231133340477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8041686387293296420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fed9f4275f0294645968cbd8d2c3c542, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FishingProgression
+  grindstoneRoot: {fileID: 5692464344120971638}
+  tradingStationRoot: {fileID: 543625836622633655}
+  meatRequired: 10
 --- !u!1 &8488106296364542015
 GameObject:
   m_ObjectHideFlags: 0
@@ -1451,7 +1591,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 383841311344016383}
-  - {fileID: 5779776781535346803}
+  - {fileID: 2325184192726878872}
   m_Father: {fileID: 3256810729672269135}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8627831770753609563
@@ -1673,7 +1813,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 3256810729672269135}
+    m_TransformParent: {fileID: 8604464942926116153}
     m_Modifications:
     - target: {fileID: 4746062997268264448, guid: a7067b4f2635b9c44be761b42a782fe6, type: 3}
       propertyPath: m_Name
@@ -1741,24 +1881,31 @@ PrefabInstance:
       propertyPath: m_Name
       value: PopUpTrident
       objectReference: {fileID: 0}
+    - target: {fileID: 4987447896373566048, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7728007882734085703, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_text
-      value: 'Trident Fishing
+      value: 'TRIDENT FISHING
 
 
         Grab the trident.
 
 
-        Stab fish or
-        sharks with its tip to catch them.
+        Stab fish with
+        its tip to catch them.
 
 
-        Each attempt reduces its sharpness.
-        Lower sharpness means a lower chance of success.
+        Each attempt reduces its sharpness. Lower
+        sharpness means a lower chance of success.
 
 
-        Sharpen it with
-        the grindstone.'
+        When sharpness first
+        reaches zero, the grindstone unlocks.
+
+
+        Sharpen it with the grindstone. '
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalScale.x
@@ -2086,17 +2233,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: PopUpProcessing
       objectReference: {fileID: 0}
+    - target: {fileID: 4987447896373566048, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7728007882734085703, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_text
-      value: 'Fish Processing
+      value: 'FISH PROCESSING
 
 
-        Use the panel to select a fish or shark and
-        specify its weight, then it will be placed on the table.
+        Use the panel to choose a weight and place
+        a fish on the table.
 
 
-        Cut it
-        with the knife to obtain meat.'
+        Cut it with the knife to obtain meat.
+
+
+        Collect
+        a total of 10 kg of meat to unlock the Trading Station.
+
+'
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalScale.x
@@ -2230,32 +2386,35 @@ PrefabInstance:
       propertyPath: m_Name
       value: PopUpDock
       objectReference: {fileID: 0}
+    - target: {fileID: 4380339320873195063, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1800
+      objectReference: {fileID: 0}
+    - target: {fileID: 4380339320873195063, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 1800
+      objectReference: {fileID: 0}
+    - target: {fileID: 4987447896373566048, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5826439866489575314, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 2000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5826439866489575314, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 2000
+      objectReference: {fileID: 0}
     - target: {fileID: 7728007882734085703, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_text
-      value: 'Dock Construction
-
-
-
-        Use the grid to construct your dock.
-
-
-
-        Select
-        a grid cell to place a dock.
-
-
-
-        Building Costs:
-
-        - Dock:
-        5 Wood
-
-        - Lift Net: 5 Wood + 5 Iron
-
-
-
-        Build a Lift Net on
-        your dock to automatically catch fish and sharks.'
+      value: "DOCK CONSTRUCTION\n\nClick a grid cell to build a dock.\n\nCost: 5
+        Wood\n\nYour first dock unlocks the Lift Net Sandbox. Complete the practice
+        to unlock normal Lift Net construction.\n\n\nLIFT NET CONSTRUCTION\n\nClick
+        a dock to build a Lift Net.\n\nCost: 5 Wood + 5 Iron\n\nThe net catches fish
+        automatically until full.\n\nThe bars show catch weight and durability. \n\nUse
+        the hammer to repair the net before durability reaches zero, or it will break
+        and disappear."
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2375,42 +2534,42 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 3940155826709132317}
+    m_TransformParent: {fileID: 8604464942926116153}
     m_Modifications:
     - target: {fileID: 1611515033818454465, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_Name
       value: PopUpTrade
       objectReference: {fileID: 0}
+    - target: {fileID: 4987447896373566048, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7728007882734085703, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_text
-      value: 'Trading Station
+      value: 'TRADING STATION
 
 
 
-        Use the panel to trade resources.
+        Use the panel to sell fish and meat or buy
+        building materials.
 
 
 
-        Sell
-        (1 kg per click):
+        Sell :
 
-        - Fish: 2 coins/kg
-
-        - Shark: 5 coins/kg
+        - Fish: 1 coin / kg
 
         -
-        Fish Meat: 3 coins/kg
-
-        - Shark Meat: 8 coins/kg
+        Fish Meat: 2 coins / kg
 
 
 
-        Buy (1
-        unit per click):
+        Buy:
 
-        - Wood: 2 coins/unit
+        - Wood: 2 coins
 
-        - Iron: 5 coins/unit'
+        -
+        Iron: 4 coins'
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalScale.x
@@ -2438,7 +2597,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalRotation.y
@@ -2446,7 +2605,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2476,8 +2635,16 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 5780039764532484501}
+    m_TransformParent: {fileID: 2325184192726878872}
     m_Modifications:
+    - target: {fileID: 2878231865687960363, guid: 7303c0f3107848c44b64df3902804a2a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5000001
+      objectReference: {fileID: 0}
+    - target: {fileID: 2878231865687960363, guid: 7303c0f3107848c44b64df3902804a2a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5000001
+      objectReference: {fileID: 0}
     - target: {fileID: 2878231865687960363, guid: 7303c0f3107848c44b64df3902804a2a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.1
@@ -2496,7 +2663,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2878231865687960363, guid: 7303c0f3107848c44b64df3902804a2a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2878231865687960363, guid: 7303c0f3107848c44b64df3902804a2a, type: 3}
       propertyPath: m_LocalRotation.y
@@ -2504,7 +2671,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2878231865687960363, guid: 7303c0f3107848c44b64df3902804a2a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2878231865687960363, guid: 7303c0f3107848c44b64df3902804a2a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2538,19 +2705,32 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 3940155826709132317}
+    m_TransformParent: {fileID: 2325184192726878872}
     m_Modifications:
     - target: {fileID: 1611515033818454465, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_Name
       value: PopUpGrindstone
       objectReference: {fileID: 0}
+    - target: {fileID: 4987447896373566048, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7728007882734085703, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_text
-      value: 'Grindstone
+      value: 'GRINDSTONE
 
 
-        Touch the grindstone with the trident''s tip to
-        restore sharpness.'
+
+        Touch the grindstone with the trident''s tip
+        to restore sharpness.'
+      objectReference: {fileID: 0}
+    - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.07999999
+      objectReference: {fileID: 0}
+    - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.009999999
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2570,7 +2750,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalRotation.y
@@ -2578,7 +2758,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 8903228174135623939, guid: 11f7c75b80a19f242a126505b536d40b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

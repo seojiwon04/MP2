@@ -5,8 +5,8 @@ public class FishingResources : MonoBehaviour
     public static FishingResources Instance { get; private set; }
 
     [Header("Fish")]
-    public float fishWeight;
-    public float fishMeatWeight;
+    public int fishWeight;
+    public int fishMeatWeight;
 
     [Header("Other Resources")]
     public int coins;
