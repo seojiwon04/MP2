@@ -61,6 +61,21 @@ private ErrorPopupManager errorPopup;
                 spawnPoint.position,
                 spawnPoint.rotation
             );
+
+            AchievementManager achievements =
+                FindFirstObjectByType<AchievementManager>();
+
+            if (achievements != null)
+            {
+                if (itemType == ItemType.Seed)
+                {
+                    achievements.UnlockAchievement("First Seed");
+                }
+                else if (itemType == ItemType.Sprinkler)
+                {
+                    achievements.UnlockAchievement("First Sprinkler");
+                }
+            }
         }
     }
 }

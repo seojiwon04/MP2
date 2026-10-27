@@ -74,6 +74,16 @@ public class Sprinkler : MonoBehaviour
                     if (tree != null)
                     {
                         tree.AddMoisture(waterAmount);
+
+                        AchievementManager achievements =
+                            FindFirstObjectByType<AchievementManager>();
+
+                        if (achievements != null)
+                        {
+                            achievements.UnlockAchievement(
+                                "First Automatic Watering"
+                            );
+                        }
                     }
                 }
             }

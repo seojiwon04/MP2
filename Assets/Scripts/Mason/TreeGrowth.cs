@@ -101,6 +101,13 @@ public class TreeGrowth : MonoBehaviour
 
     private void HarvestTree()
     {
+        AchievementManager achievements =
+            FindFirstObjectByType<AchievementManager>();
+
+        if (achievements != null)
+        {
+            achievements.UnlockAchievement("First Tree Chopped");
+        }
         int logCount;
 
         if (growth < 25f)
