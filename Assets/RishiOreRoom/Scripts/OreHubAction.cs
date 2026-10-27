@@ -8,6 +8,7 @@ public class OreHubAction : MonoBehaviour {
     public OreHubIntegration hub;
     public int index;
     public string caption;
+    int performedFrame=-1;
     public static OreHubAction Create(Transform parent,string title,Vector3 p,OreActionKind kind) {
         var g=OreVisuals.Part(parent,title,PrimitiveType.Cube,p,new Vector3(.65f,.45f,.45f),OreVisuals.Material("Metal",Color.gray));
         var action=g.AddComponent<OreHubAction>();action.kind=kind;action.caption=title;
@@ -17,14 +18,16 @@ public class OreHubAction : MonoBehaviour {
     void Start() {
         if(!hub)hub=FindAnyObjectByType<OreHubIntegration>();
         if(!room && hub)room=hub.room;
+        if(room && kind!=OreActionKind.Portal)return; // Room driver handles A / trigger / E consistently.
         var xr=GetComponent<XRSimpleInteractable>();if(!xr)xr=gameObject.AddComponent<XRSimpleInteractable>();
         xr.selectEntered.AddListener(_=>Perform());
     }
     public void Perform() {
+        if(performedFrame==Time.frameCount)return;performedFrame=Time.frameCount;
         if(kind==OreActionKind.Portal) { if(hub)hub.Travel(index);return; }
         if(kind==OreActionKind.Build)return; // Ignore legacy construction actions from the removed adapter.
         if(!room || !room.progression)return;
-        var p=room.progression;var inv=hub?hub.Inventory:null;
+        var p=room.progression;var inv=room.SharedInventory;
         switch(kind) {
         case OreActionKind.Portal: if(hub)hub.Travel(index);break;
         case OreActionKind.PracticeForge:p.PracticeForge();break;
@@ -46,7 +49,7 @@ public class OreHubAction : MonoBehaviour {
             room.Notify("Coastal Fish cooked into a miner's ration. For 60 seconds mining is faster and wears the Pickaxe half as much.");break;
         case OreActionKind.Export:
             if(p.stage<8) { room.Notify("Ore export is locked. Finish the mine's supply lessons first.");return; }
-            if(!inv.Fishing || room.Count("RefinedOre")<1) { room.Notify("Need 1 Refined Ore. Trade a Bar on the cart first; the fishing inventory must be present.");return; }
+            if(inv==null || !inv.Fishing || room.Count("RefinedOre")<1) { room.Notify("Need 1 Refined Ore. Trade a Bar on the cart first; the fishing inventory must be present.");return; }
             room.Spend("RefinedOre",1);inv.Fishing.iron++;room.Notify("1 Refined Ore delivered as 1 Iron to the fishing inventory. It can now fund Dock / Net construction.");break;
         }
         if(kind==OreActionKind.Timber || kind==OreActionKind.Insulation || kind==OreActionKind.Ration) {

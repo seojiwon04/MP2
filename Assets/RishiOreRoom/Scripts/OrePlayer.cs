@@ -8,7 +8,7 @@ public class OrePlayer : MonoBehaviour {
     public bool externalRig;
     public int consumedInputFrame=-1;
     public bool HasHelmet { get { return wornHelmet!=null; } }
-    public bool InMine { get { if(!room || !view)return false; var p=room.Local(view.transform.position); return Mathf.Abs(p.x)<8 && p.z> -6 && p.z<6; } }
+    public bool InMine { get { if(!room || !view)return false; var p=room.Local(view.transform.position); return Mathf.Abs(p.x)<8 && p.z> -6 && p.z<6 && p.y> -1 && p.y<4.5f; } }
     public OreInteractable held;
     public Camera view;
 
@@ -19,6 +19,8 @@ public class OrePlayer : MonoBehaviour {
     public float nearbyCollectRange=4f;
     CharacterController body;
     Transform hand,leftHand;
+    Transform externalOrigin;
+    bool wasInside;
     LineRenderer beam;
     GameObject desktopRig,xrRig;
     Camera desktopCamera,xrCamera;
@@ -62,6 +64,14 @@ public class OrePlayer : MonoBehaviour {
     public void InitExternal(OreRoom r, Camera camera, Transform right, Transform left) {
         room=r; externalRig=true; VR=true; rigSelected=true; view=camera;
         hand=right?right:camera.transform; leftHand=left?left:camera.transform;
+        var origin=camera.GetComponentInParent<Unity.XR.CoreUtils.XROrigin>();
+        externalOrigin=origin?origin.transform:camera.transform.root;
+        body=externalOrigin.GetComponentInChildren<CharacterController>();
+        wristReadout=OreVisuals.Label(transform,"",Vector3.zero,.014f);
+        wristReadout.name="Ore wrist readout - room owned";
+        wristReadout.GetComponent<OreBillboard>().requireFocus=false;
+        wristReadout.GetComponent<OreBillboard>().showDistance=2;
+        wristReadout.gameObject.SetActive(false);
         var beamObject=new GameObject("Ore interaction ray"); beamObject.transform.SetParent(transform,false);
         beam=beamObject.AddComponent<LineRenderer>(); beam.positionCount=2; beam.startWidth=.008f; beam.endWidth=.003f; beam.sharedMaterial=OreVisuals.Material("Ray",Color.cyan);
         ghost=OreVisuals.Part(null,"Ore grid preview",PrimitiveType.Cube,Vector3.zero,new Vector3(.85f,.025f,.85f),OreVisuals.Material("Preview",Color.green),false);
@@ -110,6 +120,7 @@ public class OrePlayer : MonoBehaviour {
         Cursor.lockState=desktop?CursorLockMode.Locked:CursorLockMode.None; Cursor.visible=false;
     }
     void AttachHeld() {
+        if(externalRig) { held.transform.SetParent(room.transform,true);FollowExternalEquipment();return; }
         held.transform.SetParent(hand,false);
         held.transform.localPosition=held.kind==OreKind.Lantern?new Vector3(0,-.32f,.08f):new Vector3(0,-.02f,.1f);
         held.transform.localRotation=Quaternion.identity;
@@ -120,6 +131,7 @@ public class OrePlayer : MonoBehaviour {
             held.kind==OreKind.Pickaxe?" durability "+held.durability.ToString("0"):""):"Hand empty";
         string instruction=buildMode?"Build: "+room.BuildName(buildType)+"\n"+(hasPlacement?(validPlacement?"A / trigger: place":placementReason):"Aim at floor"):
             "A interact | Y collect\nB build | X headlamp";
+        if(room.progression && room.progression.stage>=5)instruction+="\n"+room.SharedInventory.Summary;
         wristReadout.text=overrideText??room.ResourcesText()+"\n"+equipment+"\n"+instruction+
             (string.IsNullOrEmpty(room.message)?"":"\n"+WrapWrist(room.message,38));
     }
@@ -139,6 +151,20 @@ public class OrePlayer : MonoBehaviour {
     static bool Button(UnityEngine.XR.InputDevice d,InputFeatureUsage<bool> usage) { return d.TryGetFeatureValue(usage,out bool value)&&value; }
     void Update() {
         if(!room || !view) return;
+        if(externalRig) {
+            bool inside=InMine;
+            if(!inside) {
+                if(wasInside && held)ReturnHeldToBench();
+                if(wornHelmet && wornHelmet.lamp)wornHelmet.lamp.enabled=false;
+                wasInside=false;target=null;hasPlacement=false;
+                if(ghost)ghost.SetActive(false);if(beam)beam.enabled=false;
+                if(wristReadout)wristReadout.gameObject.SetActive(false);
+                return;
+            }
+            wasInside=true;
+            if(wristReadout)wristReadout.gameObject.SetActive(true);
+            FollowExternalEquipment();
+        }
         var kb=Keyboard.current; var mouse=Mouse.current;
         if(!externalRig && kb!=null && kb.f8Key.wasPressedThisFrame) room.useDesktopControls=!room.useDesktopControls;
         if(!externalRig && (!rigSelected || VR==room.useDesktopControls)) SelectRig(room.useDesktopControls);
@@ -157,7 +183,7 @@ public class OrePlayer : MonoBehaviour {
             }
             waitingWarning=false;
             Cursor.lockState=CursorLockMode.None; Cursor.visible=false;
-            if(!trackingOriginSet) {
+            if(!externalRig && !trackingOriginSet) {
                 var subsystems=new System.Collections.Generic.List<XRInputSubsystem>(); SubsystemManager.GetSubsystems(subsystems);
                 foreach(var subsystem in subsystems) if(subsystem.running) trackingOriginSet |= subsystem.GetTrackingOriginMode()==TrackingOriginModeFlags.Floor || subsystem.TrySetTrackingOriginMode(TrackingOriginModeFlags.Floor);
             }
@@ -230,7 +256,7 @@ public class OrePlayer : MonoBehaviour {
         beam.enabled=VR;
         beam.SetPosition(0,aim.position);
         beam.SetPosition(1,buildMode && hasPlacement?placement:target?target.transform.position:aim.position+aim.forward*interactDistance);
-        ghost.SetActive(buildMode && hasPlacement); ghost.transform.position=placement;
+        ghost.SetActive(buildMode && hasPlacement); ghost.transform.SetPositionAndRotation(placement,room.transform.rotation);
         if(tileRenderer) tileRenderer.sharedMaterial=validPlacement?validTileMaterial:invalidTileMaterial;
         // Building clicks have one meaning and never also mine or use equipment.
         if(buildMode && (use || build)) {
@@ -245,7 +271,8 @@ public class OrePlayer : MonoBehaviour {
             else room.Notify("Grip grabs equipment. A interacts; Y collects drops.");
         }
         if(interact) {
-            if(target && target.grabbable) Grab(target);
+            if(TryRoomAction(aim)) { use=false; }
+            else if(target && target.grabbable) Grab(target);
             else if((!target || IsOre(target) || target.kind==OreKind.Chunk) && CollectNearbyDrops()) { }
             else if(target) target.Use(this);
             else room.Notify(VR?"Aim at an object, or press Y near dropped resources.":"Move within 4 meters of dropped ore, or aim at equipment.");
@@ -254,7 +281,7 @@ public class OrePlayer : MonoBehaviour {
         if(equipment) UseEquipment(false);
         if(toggleHeadlamp) ToggleHeadlamp();
         if(removeHelmet) RemoveHelmet();
-        if(use) PrimaryUse();
+        if(use && !TryRoomAction(aim)) PrimaryUse();
         if(alternate) {
             if(target && (target.kind==OreKind.Smelter || target.kind==OreKind.Drill || target.kind==OreKind.WorkLight)) target.Use(this,true);
             else if(held) held.Use(this,true);
@@ -270,7 +297,7 @@ public class OrePlayer : MonoBehaviour {
         var hits=Physics.SphereCastAll(aim.position,.16f,aim.forward,interactDistance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide);
         System.Array.Sort(hits,(a,b)=>a.distance.CompareTo(b.distance));
         foreach(var hit in hits) {
-            if(hit.collider.transform.IsChildOf(transform)) continue;
+            if(IsPlayerCollider(hit.collider)) continue;
             var obj=hit.collider.GetComponentInParent<OreInteractable>();
             if(obj && obj.kind==OreKind.Chunk && (obj.collected || obj.reservedForDrill)) continue;
             if(obj && !IsCarried(obj)) return obj;
@@ -300,7 +327,7 @@ public class OrePlayer : MonoBehaviour {
         float distance=delta.magnitude;
         if(distance<.01f) return true;
         foreach(var hit in Physics.RaycastAll(view.transform.position,delta/distance,distance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)) {
-            if(hit.collider.transform.IsChildOf(transform) || hit.distance>=distance-.08f) continue;
+            if(IsPlayerCollider(hit.collider) || hit.distance>=distance-.08f) continue;
             var item=hit.collider.GetComponentInParent<OreInteractable>();
             if(item && item.kind==OreKind.Chunk) continue;
             return false;
@@ -309,7 +336,7 @@ public class OrePlayer : MonoBehaviour {
     }
     bool CollectNearbyDrops() {
         int count=0;
-        Vector3 center=transform.position+Vector3.up*.65f;
+        Vector3 center=externalRig?view.transform.position-Vector3.up*.8f:transform.position+Vector3.up*.65f;
         var seen=new System.Collections.Generic.HashSet<OreInteractable>();
         foreach(var collider in Physics.OverlapSphere(center,nearbyCollectRange,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide)) {
             var drop=collider.GetComponentInParent<OreInteractable>();
@@ -384,11 +411,11 @@ public class OrePlayer : MonoBehaviour {
         if(!held) return;
         var obj=held; held=null; obj.transform.SetParent(room.transform,true);
         Vector3 forward=Vector3.ProjectOnPlane(view.transform.forward,Vector3.up).normalized;
-        obj.transform.position=transform.position+forward*1.05f+Vector3.up*1.05f;
+        obj.transform.position=externalRig?view.transform.position+forward*.55f-Vector3.up*.45f:transform.position+forward*1.05f+Vector3.up*1.05f;
         foreach(var c in obj.GetComponentsInChildren<Collider>()) {
             c.enabled=true;
             // Ignore the player's capsule; do not launch the tool out of the player's body.
-            Physics.IgnoreCollision(c,body);
+            if(body)Physics.IgnoreCollision(c,body);
         }
         var rb=obj.GetComponent<Rigidbody>();
         if(rb) { rb.isKinematic=false; rb.useGravity=true; rb.linearVelocity=Vector3.zero; rb.angularVelocity=Vector3.zero; rb.linearDamping=.5f; rb.angularDamping=3; }
@@ -398,8 +425,10 @@ public class OrePlayer : MonoBehaviour {
         if(!helmet || helmet.kind!=OreKind.Helmet || wornHelmet==helmet) return;
         if(wornHelmet) RemoveHelmet();
         if(held==helmet) held=null;
-        wornHelmet=helmet; MakeCarried(helmet); helmet.transform.SetParent(view.transform,false);
-        helmet.transform.localPosition=Vector3.up*.14f; helmet.transform.localRotation=Quaternion.identity;
+        wornHelmet=helmet; MakeCarried(helmet);
+        helmet.transform.SetParent(externalRig?room.transform:view.transform,false);
+        if(externalRig)FollowExternalEquipment();
+        else { helmet.transform.localPosition=Vector3.up*.14f; helmet.transform.localRotation=Quaternion.identity; }
         foreach(var r in helmet.GetComponentsInChildren<Renderer>()) r.enabled=false;
         if(helmet.lamp) helmet.lamp.enabled=true;
         room.Notify("Helmet equipped. H / left primary button toggles headlamp.");
@@ -414,12 +443,58 @@ public class OrePlayer : MonoBehaviour {
     public void RemoveHelmet() {
         if(!wornHelmet) return;
         var helmet=wornHelmet; wornHelmet=null;
-        helmet.transform.SetParent(room.transform,true); helmet.transform.position=room.World(new Vector3(0,1,-3)); helmet.transform.rotation=Quaternion.identity;
+        helmet.transform.SetParent(room.transform,true); helmet.transform.position=room.World(new Vector3(0,1,-3)); helmet.transform.rotation=room.transform.rotation;
         foreach(var r in helmet.GetComponentsInChildren<Renderer>()) r.enabled=true;
         foreach(var c in helmet.GetComponentsInChildren<Collider>()) c.enabled=true;
         if(helmet.lamp) helmet.lamp.enabled=false;
         room.Notify("Helmet returned to the bench.");
     }
+    public void ReturnHeldToBench() {
+        if(!held)return;
+        var item=held;held=null;gripOwnsTool=false;buildMode=false;
+        item.transform.SetParent(room.transform,true);
+        item.transform.SetPositionAndRotation(room.World(item.kind==OreKind.Lantern?new Vector3(2,1,-3):new Vector3(-2,1.55f,-3)),room.transform.rotation);
+        foreach(var c in item.GetComponentsInChildren<Collider>())c.enabled=true;
+        var rb=item.GetComponent<Rigidbody>();if(rb) { rb.isKinematic=true;rb.useGravity=false; }
+    }
+    bool IsPlayerCollider(Collider c) {
+        return c.transform.IsChildOf(transform) || externalRig && externalOrigin && c.transform.IsChildOf(externalOrigin);
+    }
+    bool TryRoomAction(Transform aim) {
+        var hits=Physics.SphereCastAll(aim.position,.12f,aim.forward,interactDistance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide);
+        System.Array.Sort(hits,(a,b)=>a.distance.CompareTo(b.distance));
+        foreach(var hit in hits) {
+            if(IsPlayerCollider(hit.collider))continue;
+            var item=hit.collider.GetComponentInParent<OreInteractable>();
+            if(item && IsCarried(item))continue;
+            var action=hit.collider.GetComponentInParent<OreHubAction>();
+            if(action && action.room==room) { action.Perform();return true; }
+            if(!hit.collider.isTrigger)break;
+        }
+        return false;
+    }
+    void FollowExternalEquipment() {
+        if(!externalRig || !view)return;
+        if(held && hand) {
+            Vector3 offset=held.kind==OreKind.Lantern?new Vector3(0,-.32f,.08f):new Vector3(0,-.02f,.1f);
+            held.transform.SetPositionAndRotation(hand.TransformPoint(offset),hand.rotation);
+        }
+        if(wornHelmet)wornHelmet.transform.SetPositionAndRotation(view.transform.position+view.transform.up*.14f,view.transform.rotation);
+        if(wristReadout && leftHand)wristReadout.transform.position=leftHand.TransformPoint(new Vector3(0,.16f,.03f));
+    }
+    void LateUpdate() { FollowExternalEquipment(); }
+    void OnDisable() {
+        Application.onBeforeRender-=BeforeRender;
+        if(beam)beam.enabled=false;if(ghost)ghost.SetActive(false);
+        if(wristReadout)wristReadout.gameObject.SetActive(false);
+    }
+    void OnDestroy() {
+        if(!externalRig) { Cursor.lockState=CursorLockMode.None;Cursor.visible=true; }
+        if(held && room)ReturnHeldToBench();
+        if(wornHelmet && room)RemoveHelmet();
+        if(ghost)Destroy(ghost);if(invalidTileMaterial)Destroy(invalidTileMaterial);
+    }
+    public bool IsPlayerBody(Collider c) { return IsPlayerCollider(c); }
     public bool IsFocused(OreInteractable obj) { return obj && target==obj; }
     public bool IsCarried(OreInteractable obj) { return obj && (held==obj || wornHelmet==obj); }
     public string FocusHint {
@@ -446,13 +521,11 @@ public class OrePlayer : MonoBehaviour {
         GUI.Label(new Rect(Screen.width/2-6,Screen.height/2-12,20,24),"+"); GUI.color=Color.white;
     }
     void OnEnable() { Application.onBeforeRender+=BeforeRender; }
-    void OnDisable() { Application.onBeforeRender-=BeforeRender; }
     void BeforeRender() {
         if(externalRig || !VR || !view || !trackingReady) return;
         Pose(InputDevices.GetDeviceAtXRNode(XRNode.Head),view.transform);
         Pose(InputDevices.GetDeviceAtXRNode(XRNode.RightHand),hand);
         Pose(InputDevices.GetDeviceAtXRNode(XRNode.LeftHand),leftHand);
     }
-    void OnDestroy() { Cursor.lockState=CursorLockMode.None; Cursor.visible=true; if(ghost) Destroy(ghost); if(invalidTileMaterial) Destroy(invalidTileMaterial); }
 }
 }
