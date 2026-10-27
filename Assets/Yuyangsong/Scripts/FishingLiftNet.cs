@@ -17,6 +17,7 @@ public class FishingLiftNet : MonoBehaviour
     [HideInInspector] public LiftNetInstaller sandboxOwner;
 
     private bool collected, repaired;
+    private bool completing;
 
     void Update()
     {
@@ -41,6 +42,7 @@ public class FishingLiftNet : MonoBehaviour
 
     public void CollectFish()
     {
+        if (completing) return;
         int amount = Mathf.FloorToInt(fishWeight);
         if (amount < 1) return;
 
@@ -49,14 +51,19 @@ public class FishingLiftNet : MonoBehaviour
         if (sandboxOwner != null)
         {
             collected = true;
+            sandboxOwner.sandboxFeedback.Show("Fish collected!");
             CheckSandbox();
         }
         else
+        {
             FishingResources.Instance.fishWeight += amount;
+            FishingResources.Instance.totalFish += amount;
+        }
     }
 
     public void Repair(float amount)
     {
+        if (completing) return;
         bool wasDamaged = durability < maxDurability;
         durability = Mathf.Clamp(durability + amount, 0f, maxDurability);
 
@@ -64,13 +71,22 @@ public class FishingLiftNet : MonoBehaviour
             durability == maxDurability)
         {
             repaired = true;
+            sandboxOwner.sandboxFeedback.Show("Net fully repaired!");
             CheckSandbox();
         }
     }
 
     private void CheckSandbox()
     {
-        if (collected && repaired)
-            sandboxOwner.CompleteSandbox();
+        if (collected && repaired && !completing)
+        {
+            completing = true;
+            Invoke(nameof(FinishSandbox), 2f);
+        }
+    }
+
+    private void FinishSandbox()
+    {
+        sandboxOwner.CompleteSandbox();
     }
 }

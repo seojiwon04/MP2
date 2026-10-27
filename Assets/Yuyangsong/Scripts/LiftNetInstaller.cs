@@ -9,6 +9,10 @@ public class LiftNetInstaller : MonoBehaviour
     
     public FishingInteractionFeedback feedback;
 
+    public FishingInteractionFeedback sandboxFeedback;
+
+    public GameObject goalArrow;
+
     private bool isSandbox;
 
     private GameObject currentNet;
@@ -17,6 +21,7 @@ public class LiftNetInstaller : MonoBehaviour
     {
         isSandbox = true;
         sandboxCanvas.SetActive(true);
+        goalArrow.SetActive(true);
     }
 
     public void InstallNet()
@@ -50,6 +55,8 @@ public class LiftNetInstaller : MonoBehaviour
 
         if (isSandbox)
         {
+            goalArrow.SetActive(false);
+
             FishingLiftNet net = currentNet.GetComponent<FishingLiftNet>();
             net.sandboxOwner = this;
             net.catchRate = 2.5f;
@@ -63,5 +70,9 @@ public class LiftNetInstaller : MonoBehaviour
         sandboxCanvas.SetActive(false);
         Destroy(currentNet);
         FishingProgression.Instance.OnLiftNetSandboxCompleted();
+        sandboxFeedback.Show(
+            "Practice complete!\nLift Net building unlocked!",
+            4f
+        );
     }
 }
