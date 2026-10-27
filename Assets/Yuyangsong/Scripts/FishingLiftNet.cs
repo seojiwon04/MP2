@@ -55,7 +55,10 @@ public class FishingLiftNet : MonoBehaviour
             CheckSandbox();
         }
         else
+        {
             FishingResources.Instance.fishWeight += amount;
+            FishingResources.Instance.totalFish += amount;
+        }
     }
 
     public void Repair(float amount)

@@ -35,6 +35,7 @@ public class TradingStation : MonoBehaviour
         if (r == null || r.fishWeight < sellWeight) return;
         r.fishWeight -= sellWeight;
         r.coins += fishPrice * sellWeight;
+        r.totalCoins += fishPrice * sellWeight;
     }
 
     public void SellFishMeat()
@@ -45,6 +46,7 @@ public class TradingStation : MonoBehaviour
         if (r == null || r.fishMeatWeight < sellWeight) return;
         r.fishMeatWeight -= sellWeight;
         r.coins += fishMeatPrice * sellWeight;
+        r.totalCoins += fishMeatPrice * sellWeight;
     }
 
     public void BuyWood()

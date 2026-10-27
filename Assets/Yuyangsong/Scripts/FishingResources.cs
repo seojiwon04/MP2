@@ -13,6 +13,10 @@ public class FishingResources : MonoBehaviour
     public int wood;
     public int iron;
 
+    public int totalFish;
+    public int totalFishMeat;
+    public int totalCoins;
+
     void Awake()
     {
         Instance = this;
@@ -21,5 +25,6 @@ public class FishingResources : MonoBehaviour
     public void AddFish(FishStats stats)
     {
         fishWeight += stats.Weight;
+        totalFish += stats.Weight;
     }
 }
