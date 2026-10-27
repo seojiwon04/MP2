@@ -7,13 +7,17 @@ namespace Rishi.OreRoom {
 [DefaultExecutionOrder(5000)]
 public class OreIronWall : MonoBehaviour {
     public OreHubIntegration hub;
+    public OreRoom room;
     public TMP_Text inventoryWall;
     float nextSearch;
     bool warned;
     static readonly Regex IronRow=new Regex(
         @"(?im)^(?<leading>[ \t]*(?:<[^>\r\n]+>[ \t]*)*)(?<name>Iron|Ore)(?![\p{L}\p{N}_])(?<gap>[ \t]*(?:<[^>\r\n]+>[ \t]*)*(?::|=)?[ \t]*(?:<[^>\r\n]+>[ \t]*)*)(?<amount>[+-]?\d+(?:[.,]\d+)?|#)?");
     void LateUpdate() {
-        if(!hub || hub.Inventory==null)return;
+        var inventory=hub?hub.Inventory:room?room.SharedInventory:null;
+        if(inventory==null)return;
+        // The demo hub already owns its updater. Do not race it from the room too.
+        if(!hub && room && room.hub)return;
         if(!inventoryWall) {
             if(Time.unscaledTime<nextSearch)return;
             nextSearch=Time.unscaledTime+1;
@@ -21,13 +25,13 @@ public class OreIronWall : MonoBehaviour {
         }
         if(!inventoryWall)return;
         string current=inventoryWall.text;
-        string updated=FormatIron(current,hub.Inventory.Iron);
+        string updated=FormatIron(current,inventory.Iron);
         if(updated!=current)inventoryWall.text=updated;
     }
     void BindExistingWall() {
         var board=GameObject.Find("Hub layout copy/Inventory");
         if(!board)board=GameObject.Find("Inventory");
-        if(board && board.scene==hub.gameObject.scene) {
+        if(board && board.scene==gameObject.scene) {
             foreach(var label in board.GetComponentsInChildren<TMP_Text>(true)) {
                 if(!IronRow.IsMatch(label.text??""))continue;
                 inventoryWall=label;return;

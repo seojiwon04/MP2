@@ -164,7 +164,7 @@ public class OreProgression : MonoBehaviour {
         var style=new GUIStyle(GUI.skin.box){fontSize=16,wordWrap=true,alignment=TextAnchor.UpperLeft};
         GUI.Box(new Rect(Screen.width-w-12,12,w,112),"MINE MASTERY "+stage+" / 8\n"+Goal,style);
         if(revealing)GUI.Box(new Rect(Screen.width*.2f,Screen.height*.3f,Screen.width*.6f,140),revealText+"\n\nThe new activity unlocks after this introduction.",style);
-        if(stage>=5 && room.hub && room.hub.Inventory!=null)GUI.Box(new Rect(Screen.width-w-12,204,w,115),room.hub.Inventory.Summary+"\nDrill burn: "+room.drillBurnRate.ToString("0.0")+" / s | Lamp burn: "+room.lightBurnRate.ToString("0.0")+" / s\nRation: "+Mathf.CeilToInt(room.rationSeconds)+" s",style);
+        if(stage>=5)GUI.Box(new Rect(Screen.width-w-12,204,w,115),room.SharedInventory.Summary+"\nDrill burn: "+room.drillBurnRate.ToString("0.0")+" / s | Lamp burn: "+room.lightBurnRate.ToString("0.0")+" / s\nRation: "+Mathf.CeilToInt(room.rationSeconds)+" s",style);
         string awards="";
         for(int i=0;i<3;i++)if(sandboxes[i])awards+="Practice "+(i+1)+" passed  ";
         if(stage>=8)awards+="Ore supplier unlocked";

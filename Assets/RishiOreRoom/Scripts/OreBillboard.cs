@@ -22,7 +22,9 @@ public class OreBillboard : MonoBehaviour {
         } else if(label && showingLock) {
             label.text=normalText;showingLock=false;
         }
-        if(!viewer || !viewer.isActiveAndEnabled) viewer=Camera.main;
+        var room=owner && owner.room?owner.room:GetComponentInParent<OreRoom>();
+        if(room && room.player && room.player.view)viewer=room.player.view;
+        else if(!viewer || !viewer.isActiveAndEnabled)viewer=Camera.main;
         if(!viewer) { textRenderer.enabled=false; return; }
         Vector3 away=transform.position-viewer.transform.position;
         float range=visible?showDistance+.3f:showDistance;

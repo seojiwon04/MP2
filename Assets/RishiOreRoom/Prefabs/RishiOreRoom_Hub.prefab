@@ -40508,7 +40508,7 @@ GameObject:
   - component: {fileID: 2593797601740695883}
   - component: {fileID: 2097378925472988592}
   m_Layer: 0
-  m_Name: OreNativeTemporary
+  m_Name: RishiOreRoom_Hub
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40669,7 +40669,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Rishi.OreRoom.OreRoom
   spawnTestPlayer: 0
-  useDesktopControls: 1
+  useDesktopControls: 0
   integratedRoom: 1
   drillBurnRate: 2
   lightBurnRate: 0.6

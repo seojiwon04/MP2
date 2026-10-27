@@ -4,7 +4,7 @@ namespace Rishi.OreRoom {
 public class OreRoom : MonoBehaviour {
     public bool spawnTestPlayer = true;
     [Header("Player Controls")]
-    [Tooltip("Checked: keyboard/mouse desktop rig. Unchecked: tracked VR rig. Set before Play or before building for Quest.")]
+    [Tooltip("Only used when Spawn Test Player is enabled. Shared-rig prefabs bind the hub XR Origin automatically.")]
     public bool useDesktopControls = true;
     public bool integratedRoom;
     [System.NonSerialized] public OreProgression progression;
@@ -16,6 +16,11 @@ public class OreRoom : MonoBehaviour {
     public Vector3 spawn = new Vector3(0,.1f,-3.7f);
     public int randomSeed = 417;
     public OrePlayer player;
+    OreSharedInventory sharedInventory;
+    public OreSharedInventory SharedInventory { get {
+        if(hub && hub.Inventory!=null)return hub.Inventory;
+        return sharedInventory??(sharedInventory=new OreSharedInventory(this));
+    } }
     public List<OreInteractable> nodes = new List<OreInteractable>();
     [System.NonSerialized] public OreRailPlanner planner = new OreRailPlanner();
     public Vector2Int entrance = new Vector2Int(-5,9), exit = new Vector2Int(5,9);
@@ -44,6 +49,10 @@ public class OreRoom : MonoBehaviour {
         popup=OreVisuals.Label(transform,"",Vector3.zero,.028f);
         wildTime=20; Notify("Welcome to the ore mine. Equipment is on the workbench.");
         if(!GetComponent<OreCaveLighting>())gameObject.AddComponent<OreCaveLighting>();
+        if(integratedRoom && !spawnTestPlayer && !GetComponent<OreSharedRigAdapter>())gameObject.AddComponent<OreSharedRigAdapter>();
+        if(integratedRoom && !GetComponent<OreIronWall>()) {
+            var wall=gameObject.AddComponent<OreIronWall>();wall.room=this;
+        }
     }
     public void CreateLayout() {
         random=new System.Random(randomSeed);
@@ -208,7 +217,7 @@ public class OreRoom : MonoBehaviour {
         Vector3 center=World(new Vector3(cell.x,.55f,cell.y));
         foreach(var collider in Physics.OverlapBox(center,new Vector3(.4f,.45f,.4f),transform.rotation,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)) {
             if(collider==buildFloor) continue;
-            if(player && collider.transform.IsChildOf(player.transform)) return "Step away from this tile.";
+            if(player && player.IsPlayerBody(collider)) return "Step away from this tile.";
             var obj=collider.GetComponentInParent<OreInteractable>();
             if(obj && (obj.kind==OreKind.Chunk || obj.grabbable || obj.kind==OreKind.Cart || obj.kind==OreKind.Rail || (obj.kind==OreKind.Foundation && type==0))) continue;
             return "Clear the rock or structure from this tile.";
