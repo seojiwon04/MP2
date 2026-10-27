@@ -2383,7 +2383,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AchievementManager
   trophyPrefab: {fileID: 4329343970108342868, guid: 386d0075012b3f54f8b8d9c9701cc42c, type: 3}
   trophySpawnPoint: {fileID: 1228080050523207071}
-  trophySpacing: 0.4
+  trophySpacing: 1.2
 --- !u!1 &4489742093751434031
 GameObject:
   m_ObjectHideFlags: 0
