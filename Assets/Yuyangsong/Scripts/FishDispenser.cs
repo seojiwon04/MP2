@@ -6,6 +6,9 @@ public class FishDispenser : MonoBehaviour
     public Transform spawnPoint;
 
     public GameObject currentMeat;
+
+    public FishingInteractionFeedback feedback;
+
     private GameObject currentFish;
 
     public void TakeFish(int weight)
@@ -16,7 +19,12 @@ public class FishDispenser : MonoBehaviour
         FishingResources resources = FishingResources.Instance;
 
         if (resources.fishWeight < weight)
+        {
+            feedback.Show(
+                $"Not enough Fish\nNeed: {weight} kg / Have: {resources.fishWeight} kg"
+            );
             return;
+        }
 
         resources.fishWeight -= weight;
 
