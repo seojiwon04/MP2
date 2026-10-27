@@ -8,6 +8,7 @@ public class ShopButton : MonoBehaviour
         Sprinkler
     }
 
+private ErrorPopupManager errorPopup;
     public ItemType itemType;
 
     public int woodCost = 1;
@@ -21,6 +22,7 @@ public class ShopButton : MonoBehaviour
 
     void Start()
     {
+        errorPopup = FindFirstObjectByType<ErrorPopupManager>();
         resources = FindFirstObjectByType<PlayerResources>();
     }
 
@@ -30,10 +32,16 @@ public class ShopButton : MonoBehaviour
             return;
 
         if (!resources.SpendWood(woodCost))
+{
+    if (errorPopup != null)
         {
-            Debug.Log("Not enough wood!");
-            return;
+            errorPopup.ShowError(
+                "You need more Wood to buy this item."
+            );
         }
+
+        return;
+    }
 
         GameObject prefabToSpawn = null;
 
