@@ -119,7 +119,9 @@ namespace SheepFarm
         public void Shear()
         {
             if (wool.value < 25) return;
-            PlayerResources.Instance.Add("Wool", Mathf.Floor(wool.value / 25));
+            float sheared = Mathf.Floor(wool.value / 25);
+            PlayerResources.Instance.Add("Wool", sheared);
+            PlayerResources.Instance.Add("Wool Collected", sheared); // total ever collected, for unlocks
             wool.value = 0;
         }
 

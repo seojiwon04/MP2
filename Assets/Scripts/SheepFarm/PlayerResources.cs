@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace SheepFarm
 {
-    // Holds the player's resources and shows them on the wrist text.
     public class PlayerResources : MonoBehaviour
     {
         public static PlayerResources Instance;
@@ -19,9 +18,9 @@ namespace SheepFarm
             Instance = this;
             amounts["Water"] = 50;
             amounts["Wool"] = 0;
-            amounts["Seeds"] = 3;
-            amounts["Sheep"] = 0;
-            amounts["Grass"] = 0;
+            amounts["Seeds"] = 7;
+            amounts["Sheep"] = 0; // each sheep adds itself when it starts
+            amounts["Grass"] = 0; // each grass adds itself when it starts
             text = GetComponent<TextMeshPro>();
         }
 
