@@ -17,7 +17,8 @@ public class OreInteractable : MonoBehaviour {
     public TextMesh status;
     public Light lamp;
     float cooldown;
-    OreRoom room;
+    public OreRoom room;
+    public bool practiceVein, practiceMachine, practiceFuel;
     public void Bind(OreRoom r) {
         room=r;
         if(grabbable) {
@@ -54,11 +55,11 @@ public class OreInteractable : MonoBehaviour {
         }
         if(lamp) {
             if(kind==OreKind.Helmet) {
-                lamp.enabled=false; lamp.type=LightType.Spot; lamp.range=16; lamp.intensity=9;
+                lamp.enabled=false; lamp.type=LightType.Spot; lamp.range=12; lamp.intensity=5;
                 lamp.spotAngle=68; lamp.innerSpotAngle=38; lamp.color=new Color(1,.91f,.76f);
                 lamp.shadows=Application.platform==RuntimePlatform.Android?LightShadows.Hard:LightShadows.Soft; lamp.shadowBias=.03f; lamp.shadowNormalBias=.15f;
             } else if(kind==OreKind.Lantern || kind==OreKind.WorkLight) {
-                lamp.range=8; lamp.intensity=4.5f; lamp.shadows=Application.platform==RuntimePlatform.Android?LightShadows.None:LightShadows.Soft;
+                lamp.range=kind==OreKind.WorkLight?5:4.5f; lamp.intensity=kind==OreKind.WorkLight?2:1.5f; lamp.shadows=Application.platform==RuntimePlatform.Android?LightShadows.None:LightShadows.Soft;
                 lamp.shadowBias=.03f; lamp.shadowNormalBias=.15f;
             }
         }
@@ -68,13 +69,13 @@ public class OreInteractable : MonoBehaviour {
         if (!room) return;
         cooldown -= Time.deltaTime;
         if ((kind == OreKind.Lantern || kind == OreKind.WorkLight) && lamp && lamp.enabled) {
-            charge = Mathf.Max(0, charge - .6f * Time.deltaTime); lamp.intensity = charge > 0 ? 4.5f : 0;
+            charge = Mathf.Max(0, charge - room.lightBurnRate * Time.deltaTime); lamp.intensity = charge > 0 ? (kind==OreKind.WorkLight?2:1.5f) : 0;
         }
-        if (kind == OreKind.Drill && charge > 0) {
+        if (kind == OreKind.Drill && !practiceMachine && charge > 0) {
             if(drillBit) drillBit.Rotate(Vector3.up,220*Time.deltaTime,Space.Self);
-            charge = Mathf.Max(0, charge - 2 * Time.deltaTime);
+            charge = Mathf.Max(0, charge - room.drillBurnRate * Time.deltaTime);
             if (cooldown <= 0) {
-                foreach (var v in room.nodes) if (v && Vector3.Distance(transform.position, v.transform.position) < 2.3f && v.remaining > 0) { if(v.Mine(false)) drillOutput++; break; }
+                foreach (var v in room.nodes) if (v && v.isActiveAndEnabled && !v.practiceVein && Vector3.Distance(transform.position, v.transform.position) < 2.3f && v.remaining > 0) { if(v.Mine(false)) drillOutput++; break; }
                 cooldown = 3;
             }
         }
@@ -134,21 +135,29 @@ public class OreInteractable : MonoBehaviour {
     }
     public void Use(OrePlayer player, bool alternate = false) {
         if (!room) return;
+        if(room.progression && !room.progression.CanUse(kind)) { room.Notify(room.progression.LockedReason(kind)); return; }
         switch (kind) {
         case OreKind.Iron: case OreKind.Coal: case OreKind.Crystal:
-            if (player.held && player.held.kind == OreKind.Pickaxe && player.held.durability > 0 && cooldown <= 0 && remaining > 0) { player.held.durability = Mathf.Max(0, player.held.durability - 1); Mine(true); }
+            if (player.held && player.held.kind == OreKind.Pickaxe && player.held.durability > 0 && cooldown <= 0 && remaining > 0) { if(!practiceVein)player.held.durability = Mathf.Max(0, player.held.durability - (room.rationSeconds>0?.5f:1)); Mine(true); }
+            else if(player.held && player.held.durability<=0)room.Notify("Pickaxe is worn out. Smelt a Bar, then right-click the held pickaxe to repair it.");
             else if(!player.held || player.held.kind!=OreKind.Pickaxe) room.Notify("Grab the pickaxe first."); break;
         case OreKind.Pickaxe:
-            if (alternate && room.Spend("IronBar",1)) { durability = 100; room.Notify("Pickaxe repaired."); } break;
+            if (alternate && room.Spend("IronBar",1)) { durability = 100; if(room.progression)room.progression.repairs++; room.Notify("Pickaxe repaired."); } break;
         case OreKind.Helmet: player.EquipHelmet(this); break;
         case OreKind.Lantern: case OreKind.WorkLight:
-            if (alternate) { if (room.Spend("Coal",1)) charge = Mathf.Min(100,charge+40); }
+            if (alternate) { if(charge>=100)room.Notify("Fuel is full. Turn the light on and let Fuel fall before refueling.");
+                else if (room.Spend("Coal",1)) { charge = Mathf.Min(100,charge+40); if(room.progression)room.progression.refuels++; room.Notify("Fuel restored."); } }
             else if (lamp) { lamp.enabled = !lamp.enabled; room.Notify(lamp.enabled?"Light on.":"Light off."); } break;
         case OreKind.Chunk: if(collected || reservedForDrill) return; collected=true; room.Add(resource,1); OreVisuals.Burst(transform.position, new Color(.8f,.6f,.3f)); Destroy(gameObject); break;
         case OreKind.Smelter:
             if (alternate) { if (room.Exchange("IronOre",1,"Crystal",1,"IronBar",1)) { smelterHeat=Mathf.Min(100,smelterHeat+25); OreVisuals.Burst(transform.position+Vector3.up,Color.cyan); } }
             else if (room.Exchange("IronOre",2,"Coal",1,"IronBar",1)) { smelterHeat=Mathf.Min(100,smelterHeat+25); OreVisuals.Burst(transform.position+Vector3.up,Color.yellow); } break;
         case OreKind.Drill:
+            if(practiceMachine) {
+                if(alternate && room.progression)room.progression.PracticeHopper();
+                else room.Notify("Training drill: alternate-use drops loan Coal. It spends no real resources.");
+                break;
+            }
             if(alternate) room.FeedDrill(this);
             else if(charge<100 && room.Spend("Coal",1)) charge=Mathf.Min(100,charge+40);
             break;
@@ -159,8 +168,10 @@ public class OreInteractable : MonoBehaviour {
         Refresh();
     }
     public bool Mine(bool shatter) {
+        if(room && room.progression && !room.progression.CanUse(kind))return false;
         if (cooldown > 0 || remaining <= 0) return false;
-        cooldown = .45f; remaining -= 1;
+        if(practiceVein) { if(room.progression)room.progression.CompleteSandbox(0); OreVisuals.Burst(transform.position,Color.green); return true; }
+        cooldown = room.rationSeconds>0?.25f:.45f; remaining -= 1;
         OreVisuals.Burst(transform.position + Vector3.up*.5f, kind == OreKind.Crystal ? Color.cyan : Color.yellow);
         if (shatter) room.SpawnChunk(resource, transform.position + Vector3.up*.7f);
         else room.Add(resource,1);
@@ -170,6 +181,8 @@ public class OreInteractable : MonoBehaviour {
     }
     public bool AcceptCoalFragment(OreInteractable chunk) {
         if(!room || kind!=OreKind.Drill || charge>=100 || !chunk || chunk.kind!=OreKind.Chunk || chunk.resource!="Coal" || chunk.collected) return false;
+        if(chunk.practiceFuel!=practiceMachine)return false;
+        if(practiceMachine && room.progression)room.progression.CompleteSandbox(2);
         chunk.collected=true; charge=Mathf.Min(100,charge+40);
         OreVisuals.Burst(transform.position+new Vector3(.5f,1.08f,0),Color.yellow);
         room.Notify("Coal fragment consumed by hopper. Drill Fuel: "+charge.ToString("0"));
@@ -177,9 +190,10 @@ public class OreInteractable : MonoBehaviour {
     }
     void OnCollisionEnter(Collision collision) {
         if (!room || (kind != OreKind.Iron && kind != OreKind.Coal && kind != OreKind.Crystal)) return;
+        if(room.progression && !room.progression.CanUse(kind))return;
         var tool = collision.collider.GetComponentInParent<OreInteractable>();
         if (tool && tool.kind == OreKind.Pickaxe && room.player && room.player.held == tool && collision.relativeVelocity.magnitude > .5f && tool.durability > 0) {
-            tool.durability = Mathf.Max(0,tool.durability-1); Mine(true);
+            if(!practiceVein)tool.durability = Mathf.Max(0,tool.durability-1); Mine(true);
         }
     }
     public void Refresh() {
@@ -189,8 +203,11 @@ public class OreInteractable : MonoBehaviour {
             if(chunkRenderer.sharedMaterial.name!=material) chunkRenderer.sharedMaterial=OreVisuals.Material(material,Color.white);
         }
         if (!status) return;
+        if(room && room.progression && !room.progression.CanUse(kind)) {
+            status.text=kind+" - LOCKED\nComplete the current mine goal";return;
+        }
         switch(kind) {
-        case OreKind.Iron: case OreKind.Coal: case OreKind.Crystal: status.text = resource + "\nRemaining: " + remaining.ToString("0"); break;
+        case OreKind.Iron: case OreKind.Coal: case OreKind.Crystal: if(practiceVein) { status.text="Practice vein\nNo wear / no resources";break; } status.text = resource + "\nRemaining: " + remaining.ToString("0"); break;
         case OreKind.Lantern: case OreKind.WorkLight: status.text = "Fuel: " + charge.ToString("0"); break;
         case OreKind.Drill: status.text = "Drill Fuel: " + charge.ToString("0")+"\nDrill Output: "+drillOutput; break;
         case OreKind.Smelter: status.text="SMELTER\nHeat: "+smelterHeat.ToString("0"); break;

@@ -8,7 +8,7 @@ public static class OreRoomSetup {
     const string Root="Assets/RishiOreRoom/Resources/RishiOre";
     static readonly string[] Prefabs={"Pickaxe","Helmet","Lantern","Iron","Coal","Crystal","Chunk","Smelter","Drill","WorkLight","Rail","Minecart","Gate","Foundation"};
     [InitializeOnLoadMethod] static void OnLoad() { EditorApplication.delayCall+=Ensure; }
-    static void Ensure() {
+    public static void Ensure() {
         if(EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling) return;
         Directory.CreateDirectory(Root+"/Materials"); Directory.CreateDirectory(Root+"/Prefabs"); AssetDatabase.Refresh();
         Mat("Stone",new Color(.18f,.2f,.23f)); Mat("Ground",new Color(.25f,.23f,.21f)); Mat("Wood",new Color(.26f,.13f,.055f));
