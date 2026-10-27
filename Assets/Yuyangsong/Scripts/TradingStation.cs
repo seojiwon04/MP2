@@ -17,6 +17,8 @@ public class TradingStation : MonoBehaviour
     public TMP_Text woodStockText;
     public TMP_Text ironStockText;
 
+    public FishingInteractionFeedback feedback;
+
     void Update()
     {
         woodStockText.text = $"Wood Stock: {woodStock}";
@@ -44,8 +46,21 @@ public class TradingStation : MonoBehaviour
         var r = FishingResources.Instance;
         int cost = woodPrice * buyAmount;
 
-        if (r == null || woodStock < buyAmount || r.coins < cost)
+        if (r == null) return;
+
+        if (woodStock < buyAmount)
+        {
+            feedback.Show("Wood sold out");
             return;
+        }
+
+        if (r.coins < cost)
+        {
+            feedback.Show(
+                $"Not enough Coins\nNeed: {cost} / Have: {r.coins}"
+            );
+            return;
+        }
 
         r.coins -= cost;
         r.wood += buyAmount;
@@ -57,8 +72,21 @@ public class TradingStation : MonoBehaviour
         var r = FishingResources.Instance;
         int cost = ironPrice * buyAmount;
 
-        if (r == null || ironStock < buyAmount || r.coins < cost)
+        if (r == null) return;
+
+        if (ironStock < buyAmount)
+        {
+            feedback.Show("Iron sold out");
             return;
+        }
+
+        if (r.coins < cost)
+        {
+            feedback.Show(
+                $"Not enough Coins\nNeed: {cost} / Have: {r.coins}"
+            );
+            return;
+        }
 
         r.coins -= cost;
         r.iron += buyAmount;

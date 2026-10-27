@@ -6,6 +6,8 @@ public class LiftNetInstaller : MonoBehaviour
     public Transform spawnPoint;
     public int woodCost = 5;
     public int ironCost = 5;
+    
+    public FishingInteractionFeedback feedback;
 
     private bool isSandbox;
 
@@ -27,7 +29,14 @@ public class LiftNetInstaller : MonoBehaviour
                 return;
 
             FishingResources r = FishingResources.Instance;
-            if (r.wood < woodCost || r.iron < ironCost) return;
+
+            if (r.wood < woodCost || r.iron < ironCost)
+            {
+                feedback.Show(
+                    $"Not enough resources\nNeed: Wood {woodCost} / Have: Wood {r.wood}\nNeed: Iron {ironCost} / Have: Iron {r.iron}"
+                );
+                return;
+            }
 
             r.wood -= woodCost;
             r.iron -= ironCost;
