@@ -5,6 +5,7 @@ namespace SheepFarm
     public class Pond : MonoBehaviour
     {
         public Stat waterLevel = new Stat(100, 100, 2);
+        public ErrorPopup errorPopup;
 
         Transform waterPivot;
 

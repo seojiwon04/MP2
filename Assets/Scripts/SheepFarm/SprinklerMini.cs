@@ -8,12 +8,14 @@ namespace SheepFarm
     {
         public GameObject sprinklerPrefab;
         public float woolCost = 6;
+        public ErrorPopup errorPopup;
 
         XRGrabInteractable grab;
         Rigidbody rb;
         Vector3 homePosition;
         Quaternion homeRotation;
         bool wasHeld;
+        bool refused;
         float returnTimer;
 
         void Start()
@@ -22,12 +24,21 @@ namespace SheepFarm
             rb = GetComponent<Rigidbody>();
             homePosition = transform.position;
             homeRotation = transform.rotation;
+            grab.selectEntered.AddListener(args => OnGrabbed());
+        }
+
+        void OnGrabbed()
+        {
+            if (PlayerResources.Instance.Get("Wool") >= woolCost) return;
+            errorPopup.Show("Not enough resources!");
+            refused = true;
         }
 
         void Update()
         {
-            // Only grabbable when you can afford it (stays grabbable while already held).
-            grab.enabled = grab.isSelected || PlayerResources.Instance.Get("Wool") >= woolCost;
+            // Can't afford it: disabling the grab for a frame makes the hand drop it.
+            grab.enabled = !refused;
+            refused = false;
 
             if (wasHeld && !grab.isSelected)
             {
@@ -57,7 +68,11 @@ namespace SheepFarm
 
             Vector3 cell = GridSnap.Snap(hit.point);
             if (!GridSnap.IsFree(cell)) return;
-            if (!PlayerResources.Instance.Spend("Wool", woolCost)) return;
+            if (!PlayerResources.Instance.Spend("Wool", woolCost))
+            {
+                errorPopup.Show("Not enough resources!");
+                return;
+            }
 
             Instantiate(sprinklerPrefab, cell, Quaternion.identity);
         }

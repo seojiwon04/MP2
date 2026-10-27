@@ -12,6 +12,7 @@ namespace SheepFarm
         public float sprayInterval = 0.05f;
         public float sprayAngle = 35;
         public float rayLength = 4;
+        public ErrorPopup errorPopup;
 
         XRGrabInteractable grab;
         Collider canCollider;
@@ -21,6 +22,7 @@ namespace SheepFarm
         LineRenderer ray;
         float sprayTimer;
         bool triggerHeld;
+        string lastError;
 
         void Start()
         {
@@ -53,6 +55,18 @@ namespace SheepFarm
             ray.SetPosition(0, spout.position);
             ray.SetPosition(1, end);
             ray.startColor = ray.endColor = pond != null ? Color.blue : Color.white;
+
+            // Say why nothing happens, once each time it starts happening.
+            string error = null;
+            ErrorPopup errorAt = errorPopup;
+            if (pressed && pond != null && pond.waterLevel.value < 1)
+            {
+                error = "No more water left";
+                errorAt = pond.errorPopup;
+            }
+            else if (pressed && pond == null && res.Get("Water") < sprayCost) error = "Not enough water!";
+            if (error != null && error != lastError) errorAt.Show(error);
+            lastError = error;
 
             bool spraying = false;
             if (pressed && pond != null)

@@ -10,7 +10,7 @@ namespace SheepFarm
         public Stat wool = new Stat(100, 100, 4);
         public Stat health = new Stat(100, 100, 1);
         public float hungryAt = 50;
-
+        public ErrorPopup errorPopup; // in front of the face
         NavMeshAgent agent;
         Transform model;
         TextMeshPro statsText;
@@ -116,13 +116,15 @@ namespace SheepFarm
             return best;
         }
 
-        public void Shear()
+        // Returns false if there wasn't enough wool to take.
+        public bool Shear()
         {
-            if (wool.value < 25) return;
+            if (wool.value < 25) return false;
             float sheared = Mathf.Floor(wool.value / 25);
             PlayerResources.Instance.Add("Wool", sheared);
             PlayerResources.Instance.Add("Wool Collected", sheared); // total ever collected, for unlocks
             wool.value = 0;
+            return true;
         }
 
         void Die()
