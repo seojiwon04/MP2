@@ -29,6 +29,7 @@ namespace SheepFarm
                 grass.growth.value = 5;
                 grass.plot = plot;
                 plot.grass = grass;
+                PlayerResources.Instance.Add("Planted", 1);
             }
         }
     }
