@@ -5,6 +5,7 @@ public class FishingProgression : MonoBehaviour
     public static FishingProgression Instance;
 
     public GameObject grindstoneRoot, tradingStationRoot;
+    public GameObject tridentArrow, grindstoneArrow, tradingArrow;
     public int meatRequired = 10;
     public bool GrindstoneUnlocked { get; private set; }
     public bool TradingStationUnlocked { get; private set; }
@@ -20,11 +21,17 @@ public class FishingProgression : MonoBehaviour
         tradingStationRoot.SetActive(false);
     }
 
+    void Start()
+    {
+        tridentArrow.SetActive(true);
+    }
+
     public void OnTridentDepleted() 
     {
         if (GrindstoneUnlocked) return;
         GrindstoneUnlocked = true;
         grindstoneRoot.SetActive(true); 
+        grindstoneArrow.SetActive(true);
     } 
 
     public void OnMeatCollected(int amount)
@@ -35,6 +42,7 @@ public class FishingProgression : MonoBehaviour
         {
             TradingStationUnlocked = true;
             tradingStationRoot.SetActive(true);
+            tradingArrow.SetActive(true);
         }
     }
 

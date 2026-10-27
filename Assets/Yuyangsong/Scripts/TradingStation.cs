@@ -19,6 +19,8 @@ public class TradingStation : MonoBehaviour
 
     public FishingInteractionFeedback feedback;
 
+    public GameObject goalArrow;
+
     void Update()
     {
         woodStockText.text = $"Wood Stock: {woodStock}";
@@ -27,6 +29,8 @@ public class TradingStation : MonoBehaviour
 
     public void SellFish()
     {
+        goalArrow.SetActive(false);
+
         var r = FishingResources.Instance;
         if (r == null || r.fishWeight < sellWeight) return;
         r.fishWeight -= sellWeight;
@@ -35,6 +39,8 @@ public class TradingStation : MonoBehaviour
 
     public void SellFishMeat()
     {
+        goalArrow.SetActive(false);
+
         var r = FishingResources.Instance;
         if (r == null || r.fishMeatWeight < sellWeight) return;
         r.fishMeatWeight -= sellWeight;
@@ -43,6 +49,8 @@ public class TradingStation : MonoBehaviour
 
     public void BuyWood()
     {
+        goalArrow.SetActive(false);
+
         var r = FishingResources.Instance;
         int cost = woodPrice * buyAmount;
 
@@ -69,6 +77,8 @@ public class TradingStation : MonoBehaviour
 
     public void BuyIron()
     {
+        goalArrow.SetActive(false);
+        
         var r = FishingResources.Instance;
         int cost = ironPrice * buyAmount;
 
