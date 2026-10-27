@@ -8,16 +8,27 @@ public class OreBillboard : MonoBehaviour {
     OreInteractable owner;
     Camera viewer;
     bool visible;
-    void Awake() { textRenderer=GetComponent<Renderer>(); owner=GetComponentInParent<OreInteractable>(); }
+    TextMesh label;
+    string normalText;
+    bool showingLock;
+    void Awake() { textRenderer=GetComponent<Renderer>(); owner=GetComponentInParent<OreInteractable>(); label=GetComponent<TextMesh>(); }
     void LateUpdate() {
         if(!textRenderer) return;
+        bool locked=owner && owner.room && owner.room.progression && !owner.room.progression.CanUse(owner.kind);
+        if(label && locked) {
+            if(!showingLock)normalText=label.text;
+            label.text=owner.kind+" - LOCKED\nComplete the current mine goal";
+            showingLock=true;
+        } else if(label && showingLock) {
+            label.text=normalText;showingLock=false;
+        }
         if(!viewer || !viewer.isActiveAndEnabled) viewer=Camera.main;
         if(!viewer) { textRenderer.enabled=false; return; }
         Vector3 away=transform.position-viewer.transform.position;
         float range=visible?showDistance+.3f:showDistance;
         visible=Time.time>=suppressedUntil && away.sqrMagnitude <= range*range && Vector3.Dot(viewer.transform.forward,away.normalized)>.25f;
         if(owner) {
-            var player=viewer.GetComponentInParent<OrePlayer>();
+            var player=owner.room?owner.room.player:viewer.GetComponentInParent<OrePlayer>();
             if(player) visible &= !player.IsCarried(owner) && (!requireFocus || player.IsFocused(owner));
         }
         textRenderer.enabled=visible;

@@ -5,6 +5,10 @@ using CommonUsages = UnityEngine.XR.CommonUsages;
 namespace Rishi.OreRoom {
 public class OrePlayer : MonoBehaviour {
     public OreRoom room;
+    public bool externalRig;
+    public int consumedInputFrame=-1;
+    public bool HasHelmet { get { return wornHelmet!=null; } }
+    public bool InMine { get { if(!room || !view)return false; var p=room.Local(view.transform.position); return Mathf.Abs(p.x)<8 && p.z> -6 && p.z<6; } }
     public OreInteractable held;
     public Camera view;
 
@@ -55,11 +59,32 @@ public class OrePlayer : MonoBehaviour {
         foreach(var collider in ghost.GetComponents<Collider>()) collider.enabled=false;
         ghost.SetActive(false);
     }
+    public void InitExternal(OreRoom r, Camera camera, Transform right, Transform left) {
+        room=r; externalRig=true; VR=true; rigSelected=true; view=camera;
+        hand=right?right:camera.transform; leftHand=left?left:camera.transform;
+        var beamObject=new GameObject("Ore interaction ray"); beamObject.transform.SetParent(transform,false);
+        beam=beamObject.AddComponent<LineRenderer>(); beam.positionCount=2; beam.startWidth=.008f; beam.endWidth=.003f; beam.sharedMaterial=OreVisuals.Material("Ray",Color.cyan);
+        ghost=OreVisuals.Part(null,"Ore grid preview",PrimitiveType.Cube,Vector3.zero,new Vector3(.85f,.025f,.85f),OreVisuals.Material("Preview",Color.green),false);
+        validTileMaterial=ghost.GetComponent<Renderer>().sharedMaterial;
+        invalidTileMaterial=new Material(validTileMaterial); invalidTileMaterial.color=Color.red; tileRenderer=ghost.GetComponent<Renderer>();
+        foreach(var c in ghost.GetComponents<Collider>())c.enabled=false; ghost.SetActive(false);
+    }
+    public void Teleport(Vector3 feet, Quaternion rotation) {
+        if(held)Drop();
+        if(body)body.enabled=false;
+        transform.SetPositionAndRotation(feet,rotation);
+        if(body)body.enabled=true; fall=0;
+    }
     Camera CreateCamera(Transform parent,string name,bool stereo) {
         var eye=new GameObject(name); eye.tag="MainCamera"; eye.transform.SetParent(parent,false);
         eye.transform.localPosition=Vector3.up*1.65f;
         var camera=eye.AddComponent<Camera>(); camera.nearClipPlane=.05f;
-        camera.stereoTargetEye=stereo?StereoTargetEyeMask.Both:StereoTargetEyeMask.None;
+        if(UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline==null)
+            camera.stereoTargetEye=stereo?StereoTargetEyeMask.Both:StereoTargetEyeMask.None;
+        else if(!stereo) {
+            var data=eye.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+            data.allowXRRendering=false;
+        }
         eye.AddComponent<AudioListener>(); return camera;
     }
     Transform CreateHand(Transform parent,string name,bool right) {
@@ -115,8 +140,8 @@ public class OrePlayer : MonoBehaviour {
     void Update() {
         if(!room || !view) return;
         var kb=Keyboard.current; var mouse=Mouse.current;
-        if(kb!=null && kb.f8Key.wasPressedThisFrame) room.useDesktopControls=!room.useDesktopControls;
-        if(!rigSelected || VR==room.useDesktopControls) SelectRig(room.useDesktopControls);
+        if(!externalRig && kb!=null && kb.f8Key.wasPressedThisFrame) room.useDesktopControls=!room.useDesktopControls;
+        if(!externalRig && (!rigSelected || VR==room.useDesktopControls)) SelectRig(room.useDesktopControls);
         var head=InputDevices.GetDeviceAtXRNode(XRNode.Head);
         bool tracked=head.TryGetFeatureValue(CommonUsages.isTracked,out bool tracking)&&tracking;
         trackingReady=head.isValid && tracked && XRSettings.isDeviceActive;
@@ -136,9 +161,9 @@ public class OrePlayer : MonoBehaviour {
                 var subsystems=new System.Collections.Generic.List<XRInputSubsystem>(); SubsystemManager.GetSubsystems(subsystems);
                 foreach(var subsystem in subsystems) if(subsystem.running) trackingOriginSet |= subsystem.GetTrackingOriginMode()==TrackingOriginModeFlags.Floor || subsystem.TrySetTrackingOriginMode(TrackingOriginModeFlags.Floor);
             }
-            Pose(head,view.transform);
+            if(!externalRig)Pose(head,view.transform);
             var right=InputDevices.GetDeviceAtXRNode(XRNode.RightHand); var left=InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
-            Pose(right,hand); Pose(left,leftHand);
+            if(!externalRig) { Pose(right,hand); Pose(left,leftHand); }
             bool grip=Button(right,CommonUsages.gripButton),trigger=Button(right,CommonUsages.triggerButton),alt=Button(left,CommonUsages.triggerButton);
             bool place=Button(right,CommonUsages.primaryButton),cycle=Button(right,CommonUsages.secondaryButton),helmet=Button(left,CommonUsages.primaryButton);
             bool collect=Button(left,CommonUsages.secondaryButton),leftGrip=Button(left,CommonUsages.gripButton);
@@ -165,11 +190,13 @@ public class OrePlayer : MonoBehaviour {
             previousGrip=grip; previousTrigger=trigger; previousAlt=alt; previousBuild=place; previousCycle=cycle;
             previousHeadlamp=helmet; previousGather=collect; previousLeftGrip=leftGrip;
             // Update capsule geometry before movement for floor-height and room-scale tracking.
+            if(!externalRig) {
             body.height=Mathf.Clamp(view.transform.localPosition.y,1,2.2f);
             body.center=new Vector3(view.transform.localPosition.x,body.height*.5f,view.transform.localPosition.z);
             left.TryGetFeatureValue(CommonUsages.primary2DAxis,out Vector2 move); Move(move,2.2f);
             right.TryGetFeatureValue(CommonUsages.primary2DAxis,out Vector2 turn);
             if(Mathf.Abs(turn.x)>.65f && snapCooldown<=0) { transform.RotateAround(view.transform.position,Vector3.up,Mathf.Sign(turn.x)*30); snapCooldown=.3f; }
+            }
         } else {
             view.transform.localPosition=Vector3.up*1.65f; body.height=1.8f; body.center=Vector3.up*.9f;
             if(kb!=null && kb.escapeKey.wasPressedThisFrame) { bool locked=Cursor.lockState==CursorLockMode.Locked; Cursor.lockState=locked?CursorLockMode.None:CursorLockMode.Locked; Cursor.visible=locked; }
@@ -193,6 +220,7 @@ public class OrePlayer : MonoBehaviour {
             leftHand.position=view.transform.TransformPoint(new Vector3(-.28f,-.23f,.6f)); leftHand.rotation=view.transform.rotation;
             use=mouse!=null&&mouse.leftButton.wasPressedThisFrame; alternate=mouse!=null&&mouse.rightButton.wasPressedThisFrame;
         }
+        if(consumedInputFrame==Time.frameCount || (room.integratedRoom && !InMine)) { target=null; ghost.SetActive(false); beam.enabled=false; return; }
         Transform aim=VR?hand:view.transform;
         target=FindTarget(aim);
         if(VR) { var near=NearHand(); if(near) target=near; }
@@ -335,7 +363,7 @@ public class OrePlayer : MonoBehaviour {
         Vector3 f=view.transform.forward; f.y=0; f.Normalize(); Vector3 right=Vector3.Cross(Vector3.up,f);
         fall=body.isGrounded?-2:fall-9.81f*Time.deltaTime;
         body.Move((Vector3.ClampMagnitude(f*input.y+right*input.x,1)*speed+Vector3.up*fall)*Time.deltaTime);
-        if(transform.position.y < -5) { body.enabled=false; transform.position=room.spawn; body.enabled=true; fall=0; }
+        if(transform.position.y < -5) { body.enabled=false; transform.position=room.World(room.spawn); body.enabled=true; fall=0; }
     }
     void MakeCarried(OreInteractable obj) {
         var rb=obj.GetComponent<Rigidbody>();
@@ -386,7 +414,7 @@ public class OrePlayer : MonoBehaviour {
     public void RemoveHelmet() {
         if(!wornHelmet) return;
         var helmet=wornHelmet; wornHelmet=null;
-        helmet.transform.SetParent(room.transform,true); helmet.transform.position=new Vector3(0,1,-3); helmet.transform.rotation=Quaternion.identity;
+        helmet.transform.SetParent(room.transform,true); helmet.transform.position=room.World(new Vector3(0,1,-3)); helmet.transform.rotation=Quaternion.identity;
         foreach(var r in helmet.GetComponentsInChildren<Renderer>()) r.enabled=true;
         foreach(var c in helmet.GetComponentsInChildren<Collider>()) c.enabled=true;
         if(helmet.lamp) helmet.lamp.enabled=false;
@@ -405,13 +433,13 @@ public class OrePlayer : MonoBehaviour {
         }
     }
     void OnGUI() {
-        if(VR || !room) return;
+        if(VR || !room || room.integratedRoom && !InMine) return;
         if(hud==null) { hud=new GUIStyle(GUI.skin.box); hud.fontSize=15; hud.alignment=TextAnchor.MiddleLeft; hud.padding=new RectOffset(12,12,8,8); hud.wordWrap=true; }
-        float width=Mathf.Min(520,Screen.width-24);
+        float width=room.integratedRoom?Mathf.Min(480,Screen.width*.5f-24):Mathf.Min(520,Screen.width-24);
         GUI.Box(new Rect(12,12,width,60),room.ResourcesText(),hud);
         GUI.Box(new Rect(12,Screen.height-70,width,58),FocusHint+"\n"+(buildMode?"Build: "+room.BuildName(buildType)+" | Click / B place | G close":"F equipment | H headlamp | F1 help"),hud);
         if(buildMode) GUI.Box(new Rect(12,140,width,48),hasPlacement?
-            "Tile "+OreRoom.GridCell(placement)+" | "+(validPlacement?"Ready to place":placementReason):placementReason,hud);
+            "Tile "+OreRoom.GridCell(room.Local(placement))+" | "+(validPlacement?"Ready to place":placementReason):placementReason,hud);
         if(!string.IsNullOrEmpty(room.message)) GUI.Box(new Rect(12,82,width,48),room.message,hud);
         if(showHelp) GUI.Box(new Rect(12,buildMode?198:140,width,155),"WASD move | Mouse look\nE grab / swap / interact | Q drop\nLeft click use / mine | Right click refuel / repair\nF always uses held equipment | H headlamp | X remove helmet\n1 / 2 / 3 / 4 select building | Click / B place | G exit building\nEsc release cursor | F8 desktop override",hud);
         GUI.color=target?new Color(.5f,1,.65f):Color.white;
@@ -420,7 +448,7 @@ public class OrePlayer : MonoBehaviour {
     void OnEnable() { Application.onBeforeRender+=BeforeRender; }
     void OnDisable() { Application.onBeforeRender-=BeforeRender; }
     void BeforeRender() {
-        if(!VR || !view || !trackingReady) return;
+        if(externalRig || !VR || !view || !trackingReady) return;
         Pose(InputDevices.GetDeviceAtXRNode(XRNode.Head),view.transform);
         Pose(InputDevices.GetDeviceAtXRNode(XRNode.RightHand),hand);
         Pose(InputDevices.GetDeviceAtXRNode(XRNode.LeftHand),leftHand);
