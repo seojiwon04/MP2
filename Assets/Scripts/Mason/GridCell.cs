@@ -43,11 +43,32 @@ public class GridCell : MonoBehaviour
 
     public void TryPlant(GameObject seedObject)
     {
+        ErrorPopupManager errorPopup =
+        FindFirstObjectByType<ErrorPopupManager>();
+
         if (!isTilled)
+        {
+            if (errorPopup != null)
+            {
+                errorPopup.ShowError(
+                    "Till the soil before planting."
+                );
+            }
+
             return;
+        }
 
         if (!IsEmpty())
+        {
+            if (errorPopup != null)
+            {
+                errorPopup.ShowError(
+                    "This plot is already occupied."
+                );
+            }
+
             return;
+        }
 
         Vector3 treePosition = transform.position;
 
@@ -66,16 +87,46 @@ public class GridCell : MonoBehaviour
             treeGrowth.currentCell = this;
         }
 
+        ProgressionManager progression =
+    FindFirstObjectByType<ProgressionManager>();
+
+        if (progression != null)
+        {
+            progression.NotifyTreePlanted();
+        }
+
+
         Destroy(seedObject);
     }
 
     public void TryPlaceSprinkler(GameObject sprinklerObject)
     {
+        ErrorPopupManager errorPopup =
+        FindFirstObjectByType<ErrorPopupManager>();
+
         if (isTilled)
+        {
+            if (errorPopup != null)
+            {
+                errorPopup.ShowError(
+                    "Sprinklers require untilled soil."
+                );
+            }
+
             return;
+        }
 
         if (!IsEmpty())
+        {
+            if (errorPopup != null)
+            {
+                errorPopup.ShowError(
+                    "This plot is already occupied."
+                );
+            }
+
             return;
+        }
 
         Sprinkler sprinkler = sprinklerObject.GetComponent<Sprinkler>();
 
@@ -85,6 +136,14 @@ public class GridCell : MonoBehaviour
         currentObject = sprinklerObject;
 
         sprinkler.AttachToCell(this);
+
+        ProgressionManager progression =
+        FindFirstObjectByType<ProgressionManager>();
+
+        if (progression != null)
+        {
+            progression.NotifySprinklerPlaced();
+        }
     }
     private void UpdateAppearance()
     {
