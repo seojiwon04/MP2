@@ -22,6 +22,11 @@ public class FishSpawner : MonoBehaviour
         FishPath fishPath = fish.GetComponent<FishPath>();
         Vector3[] path = fishPath.SamplePath();
 
+        for (int i = 0; i < path.Length; i++) // change path points from local to world space (for hub integration)
+        {
+            path[i] = transform.TransformPoint(path[i]);
+        }
+
         int startIndex = Random.Range(0, path.Length);
         fish.transform.position = path[startIndex];
         fishPath.SetPath(path, startIndex);

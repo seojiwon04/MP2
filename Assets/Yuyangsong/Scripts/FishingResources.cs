@@ -27,4 +27,14 @@ public class FishingResources : MonoBehaviour
         fishWeight += stats.Weight;
         totalFish += stats.Weight;
     }
+
+    // called by the hub when a resource from this room is used there
+    public bool UseResource(string resource, int amount)
+    {
+        if (resource != "FishMeat" || fishMeatWeight < amount)
+            return false;
+
+        fishMeatWeight -= amount;
+        return true;
+    }
 }
