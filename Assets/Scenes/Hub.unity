@@ -464,8 +464,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Cost:\n\n1 Civ: 2 Wood\n\t  2 Fish\n\t  2 Wool\n\n1 Road: 8 Wood\n\t    
-    8 Fish\n\t     8 Wool\n"
+  m_text: "Cost:\n\n1 Road: 2 Wood\n \t    2 Fish\n\t    2 Wool\n\n1 Civ: 8 Wood\n\t 
+    8 Fish\n\t  8 Wool\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2056,7 +2056,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HubInventory
   inventoryText: {fileID: 473333946}
   startWithDebugResources: 1
-  debugAmount: 100
+  debugAmount: 12
 --- !u!1001 &873465337
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2288,6 +2288,14 @@ PrefabInstance:
     - target: {fileID: 1680501587, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_LocalPosition.y
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1178791450436251564, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_CameraYOffset
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1178791450436251564, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
+      propertyPath: m_RequestedTrackingOriginMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_Name
