@@ -34,10 +34,12 @@ public class GridManager : MonoBehaviour
 
                 GameObject cellObject = Instantiate(
                     cellPrefab,
-                    position,
-                    Quaternion.identity,
                     transform
                 );
+
+                // use grid manager's position as the parent position for the cell
+                cellObject.transform.localPosition = position;
+                cellObject.transform.localRotation = Quaternion.identity; 
 
                 cellObject.name = "Cell_" + x + "_" + z;
 

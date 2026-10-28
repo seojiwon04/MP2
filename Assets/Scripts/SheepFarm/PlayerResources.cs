@@ -42,6 +42,12 @@ namespace SheepFarm
             return true;
         }
 
+        // Called by the hub when a resource from this room is used there.
+        public bool UseResource(string name, int amount)
+        {
+            return Spend(name, amount);
+        }
+
         void Update()
         {
             text.text = "Water: " + Mathf.Floor(Get("Water")) + "/" + maxWater

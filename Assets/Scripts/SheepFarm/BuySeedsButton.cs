@@ -8,6 +8,7 @@ namespace SheepFarm
     {
         public float woolCost = 1;
         public float seedsGiven = 3;
+        public ErrorPopup errorPopup;
 
         void Start()
         {
@@ -18,6 +19,8 @@ namespace SheepFarm
         {
             if (PlayerResources.Instance.Spend("Wool", woolCost))
                 PlayerResources.Instance.Add("Seeds", seedsGiven);
+            else
+                errorPopup.Show("Not enough resources!");
         }
     }
 }
