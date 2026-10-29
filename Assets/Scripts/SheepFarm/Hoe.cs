@@ -31,7 +31,11 @@ namespace SheepFarm
             {
                 cooldown = 0.5f;
                 Vector3 cell = GridSnap.Snap(tip);
-                if (GridSnap.IsFree(cell)) Instantiate(plotPrefab, cell, Quaternion.identity);
+                if (GridSnap.IsFree(cell))
+                {
+                    Instantiate(plotPrefab, cell, Quaternion.identity);
+                    PlayerResources.Instance.Add("Tilled", 1);
+                }
             }
         }
     }

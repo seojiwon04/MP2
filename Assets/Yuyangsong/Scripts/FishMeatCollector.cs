@@ -12,6 +12,7 @@ public class FishMeatCollector : MonoBehaviour
             return;
 
         resources.fishMeatWeight += weight;
+        resources.totalFishMeat += weight;
         
         FishingProgression.Instance.OnMeatCollected(weight);
         
