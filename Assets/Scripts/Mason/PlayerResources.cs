@@ -25,9 +25,28 @@ public class PlayerResources : MonoBehaviour
 
         UpdateUI();
 
+        ProgressionManager progressionManager =
+            FindFirstObjectByType<ProgressionManager>();
+
         if (progressionManager != null)
         {
             progressionManager.NotifyWoodCollected(totalWoodCollected);
+        }
+
+        AchievementManager achievements =
+            FindFirstObjectByType<AchievementManager>();
+
+        if (achievements != null)
+        {
+            if (totalWoodCollected >= 1)
+            {
+                achievements.UnlockAchievement("First Wood");
+            }
+
+            if (totalWoodCollected >= 10)
+            {
+                achievements.UnlockAchievement("Wood Collector");
+            }
         }
     }
 

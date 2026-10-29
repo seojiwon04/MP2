@@ -12,5 +12,18 @@ public class Bucket : MonoBehaviour
         {
             tree.AddMoisture(moistureAmount);
         }
+        if (tree != null)
+        {
+            tree.AddMoisture(moistureAmount);
+
+            AchievementManager achievements =
+                FindFirstObjectByType<AchievementManager>();
+
+            if (achievements != null)
+            {
+                achievements.UnlockAchievement("First Tree Watered");
+            }
+        }
+
     }
 }

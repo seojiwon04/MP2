@@ -95,6 +95,14 @@ public class GridCell : MonoBehaviour
             progression.NotifyTreePlanted();
         }
 
+        AchievementManager achievements =
+    FindFirstObjectByType<AchievementManager>();
+
+        if (achievements != null)
+        {
+            achievements.UnlockAchievement("First Tree Planted");
+        }
+
 
         Destroy(seedObject);
     }
