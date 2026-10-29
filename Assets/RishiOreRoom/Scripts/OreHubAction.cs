@@ -44,13 +44,11 @@ public class OreHubAction : MonoBehaviour {
             room.Notify("Farm Wool installed as lamp insulation. Light fuel burn falls from 0.6 to 0.3 per second.");break;
         case OreActionKind.Ration:
             if(p.ration) { room.Notify("Ration lesson is complete. Continue to ore export.");return; }
-            if(inv==null || inv.Fish<5 || room.Count("Coal")<1) { room.Notify("Cooked ration needs 5 kg Fish + 1 Coal. Catch fish in Yuyangsong's room and mine Coal.");return; }
+            if(inv==null || inv.Fish<5 || room.Count("Coal")<1) { room.Notify("Cooked ration needs 5 kg Fish Meat + 1 Coal. Catch, process, and collect Fish Meat in Yuyangsong's room; mine Coal here.");return; }
             inv.SpendFish(5);room.Spend("Coal",1);p.ration=true;room.rationSeconds=60;
-            room.Notify("Coastal Fish cooked into a miner's ration. For 60 seconds mining is faster and wears the Pickaxe half as much.");break;
+            room.Notify("Coastal Fish Meat cooked into a miner's ration. For 60 seconds mining is faster and wears the Pickaxe half as much.");break;
         case OreActionKind.Export:
-            if(p.stage<8) { room.Notify("Ore export is locked. Finish the mine's supply lessons first.");return; }
-            if(inv==null || !inv.Fishing || room.Count("RefinedOre")<1) { room.Notify("Need 1 Refined Ore. Trade a Bar on the cart first; the fishing inventory must be present.");return; }
-            room.Spend("RefinedOre",1);inv.Fishing.iron++;room.Notify("1 Refined Ore delivered as 1 Iron to the fishing inventory. It can now fund Dock / Net construction.");break;
+            room.Notify("Refined Ore already counts as Iron on the hub inventory wall. Roads and civilizations spend it directly.");break;
         }
         if(kind==OreActionKind.Timber || kind==OreActionKind.Insulation || kind==OreActionKind.Ration) {
             OreVisuals.Burst(transform.position,Color.green);

@@ -21,7 +21,7 @@ public class OreProgression : MonoBehaviour {
         "AUTOMATIC DRILL: a foundation supports a machine that mines for you.",
         "TIMBER BRACING: forest Wood can support your mine machinery.",
         "WOOL INSULATION: farm Wool protects your lamps from wasting fuel.",
-        "MINER'S RATION: fish from the coast feeds the miner for efficient work.",
+        "MINER'S RATION: processed Fish Meat from the coast feeds the miner for efficient work.",
         "ORE EXPORT: the rail cart turns Bars into Refined Ore for the settlement."
     };
     readonly string[] goals={
@@ -32,7 +32,7 @@ public class OreProgression : MonoBehaviour {
         "Build Foundation (4), then Drill (1) on the same tile near ore. Reach 2 Drill Output.",
         "Bring 1 forest Wood + 1 Bar to the timber order at the supply desk.",
         "Bring 1 farm Wool + 1 Coal to the insulation order.",
-        "Bring 5 kg Fish + 1 Coal to cook the miner's ration.",
+        "Bring 5 kg Fish Meat + 1 Coal to cook the miner's ration.",
         "Trade Bars on the cart for Refined Ore. Return to the hub to build roads and civilizations."
     };
     public bool Revealing { get { return revealing; } }

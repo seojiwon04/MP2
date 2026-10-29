@@ -14,6 +14,9 @@ public class OreIronWall : MonoBehaviour {
     static readonly Regex IronRow=new Regex(
         @"(?im)^(?<leading>[ \t]*(?:<[^>\r\n]+>[ \t]*)*)(?<name>Iron|Ore)(?![\p{L}\p{N}_])(?<gap>[ \t]*(?:<[^>\r\n]+>[ \t]*)*(?::|=)?[ \t]*(?:<[^>\r\n]+>[ \t]*)*)(?<amount>[+-]?\d+(?:[.,]\d+)?|#)?");
     void LateUpdate() {
+        // The real team hub owns the entire inventory wall and includes Iron itself now.
+        if(room && room.SharedInventory.Hub)return;
+        if(hub && hub.room && hub.room.SharedInventory.Hub)return;
         var inventory=hub?hub.Inventory:room?room.SharedInventory:null;
         if(inventory==null)return;
         // The demo hub already owns its updater. Do not race it from the room too.

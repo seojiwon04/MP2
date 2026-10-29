@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
@@ -17,6 +18,7 @@ public class CivBuilder : MonoBehaviour
     public SheepFarm.ErrorPopup errorPopup;
     public Material aliveMaterial;
     public GameObject civPrefab;
+    public TMP_Text costText;
 
     public Renderer[] platforms;
     public GameObject[] civs;
@@ -26,14 +28,23 @@ public class CivBuilder : MonoBehaviour
     public int roadWood = 2;
     public int roadWool = 2;
     public int roadFishMeat = 2;
+    public int roadIron = 2;
 
     [Header("Civ Cost")]
     public int civWood = 8;
     public int civWool = 8;
     public int civFishMeat = 8;
+    public int civIron = 8;
 
     private void Start()
     {
+        if (costText != null)
+        {
+            costText.text = "Cost:\n\n1 Road:\n" + roadWood + " Wood + " + roadWool + " Wool\n"
+                + roadFishMeat + " Fish Meat + " + roadIron + " IRON\n\n1 Civ:\n"
+                + civWood + " Wood + " + civWool + " Wool\n"
+                + civFishMeat + " Fish Meat + " + civIron + " IRON";
+        }
         if (inventory == null)
         {
             inventory = FindAnyObjectByType<HubInventory>();
@@ -82,7 +93,7 @@ public class CivBuilder : MonoBehaviour
             ShowError(road.road, "Road not connected to a civ!");
             return;
         }
-        if (!inventory.UseResources(roadWood, roadWool, roadFishMeat))
+        if (!inventory.UseResources(roadWood, roadWool, roadFishMeat, roadIron))
         {
             ShowError(road.road, "Not enough resources!");
             return;
@@ -107,7 +118,7 @@ public class CivBuilder : MonoBehaviour
             ShowError(platform, "No road connected!");
             return;
         }
-        if (!inventory.UseResources(civWood, civWool, civFishMeat))
+        if (!inventory.UseResources(civWood, civWool, civFishMeat, civIron))
         {
             ShowError(platform, "Not enough resources!");
             return;
