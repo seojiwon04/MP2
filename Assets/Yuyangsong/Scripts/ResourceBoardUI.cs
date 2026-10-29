@@ -17,8 +17,8 @@ public class ResourceBoardUI : MonoBehaviour
 
         fishText.text = $"Fish: {resources.fishWeight} kg";  
         fishMeatText.text = $"Fish Meat: {resources.fishMeatWeight} kg";
-        woodText.text = $"Wood: {resources.wood}";
-        ironText.text = $"Iron: {resources.iron}";
+        woodText.text = $"Wood: {resources.GetWood()}";
+        ironText.text = $"Iron: {resources.GetIron()}";
         coinsText.text = $"Coins: {resources.coins}";
     }
 }

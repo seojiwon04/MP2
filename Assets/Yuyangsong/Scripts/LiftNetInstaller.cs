@@ -35,16 +35,15 @@ public class LiftNetInstaller : MonoBehaviour
 
             FishingResources r = FishingResources.Instance;
 
-            if (r.wood < woodCost || r.iron < ironCost)
+            if (!r.SpendMaterials(woodCost, ironCost))
             {
                 feedback.Show(
-                    $"Not enough resources\nNeed: Wood {woodCost} / Have: Wood {r.wood}\nNeed: Iron {ironCost} / Have: Iron {r.iron}"
+                    $"Not enough resources\n" +
+                    $"Need: Wood {woodCost} / Have: Wood {r.GetWood()}\n" +
+                    $"Need: Iron {ironCost} / Have: Iron {r.GetIron()}"
                 );
                 return;
             }
-
-            r.wood -= woodCost;
-            r.iron -= ironCost;
         }
 
         currentNet = Instantiate(
