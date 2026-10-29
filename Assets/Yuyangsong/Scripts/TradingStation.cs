@@ -72,8 +72,10 @@ public class TradingStation : MonoBehaviour
             return;
         }
 
+        if (!r.AddWood(buyAmount))
+            return;
+
         r.coins -= cost;
-        r.wood += buyAmount;
         woodStock -= buyAmount;
     }
 
@@ -100,8 +102,10 @@ public class TradingStation : MonoBehaviour
             return;
         }
 
+        if (!r.AddIron(buyAmount))
+            return;
+
         r.coins -= cost;
-        r.iron += buyAmount;
         ironStock -= buyAmount;
     }
 }

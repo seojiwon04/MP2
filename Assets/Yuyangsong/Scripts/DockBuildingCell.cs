@@ -19,15 +19,13 @@ public class DockBuildingCell : MonoBehaviour
         
         if (resources == null) return;
 
-        if (resources.wood < woodCost)
+        if (!resources.SpendMaterials(woodCost, 0))
         {
             feedback.Show(
-                $"Not enough Wood\nNeed: {woodCost} / Have: {resources.wood}"
+                $"Not enough Wood\nNeed: {woodCost} / Have: {resources.GetWood()}"
             );
             return;
         }
-
-        resources.wood -= woodCost;
 
         Vector3 position = transform.position + Vector3.up * yOffset;
         GameObject dock = Instantiate(dockPrefab, position, transform.rotation);
