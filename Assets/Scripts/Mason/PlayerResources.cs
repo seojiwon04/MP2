@@ -60,6 +60,15 @@ public class PlayerResources : MonoBehaviour
         return true;
     }
 
+    // called by the hub when a resource from this room is used there
+    public bool UseResource(string resource, int amount)
+    {
+        if (resource == "Wood")
+            return SpendWood(amount);
+
+        return false;
+    }
+
     private void UpdateUI()
     {
         if (woodText != null)

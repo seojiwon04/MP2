@@ -6,6 +6,8 @@ public class DockBuildingCell : MonoBehaviour
     public int woodCost = 5;
     public float yOffset = -2.43f;
 
+    public FishingInteractionFeedback feedback;
+
     private bool occupied;
 
     public void BuildDock()
@@ -14,14 +16,26 @@ public class DockBuildingCell : MonoBehaviour
             return;
 
         FishingResources resources = FishingResources.Instance;
-        if (resources == null || resources.wood < woodCost)
+        
+        if (resources == null) return;
+
+        if (resources.wood < woodCost)
+        {
+            feedback.Show(
+                $"Not enough Wood\nNeed: {woodCost} / Have: {resources.wood}"
+            );
             return;
+        }
 
         resources.wood -= woodCost;
 
         Vector3 position = transform.position + Vector3.up * yOffset;
-        Instantiate(dockPrefab, position, transform.rotation);
+        GameObject dock = Instantiate(dockPrefab, position, transform.rotation);
 
         occupied = true;
+
+        FishingProgression.Instance.OnDockBuilt(
+            dock.GetComponentInChildren<LiftNetInstaller>()
+        );
     }
 }

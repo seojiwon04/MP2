@@ -33,9 +33,10 @@ namespace SheepFarm
         {
             for (int tries = 0; tries < 10; tries++)
             {
-                Vector3 p = areaCenter + new Vector3(Random.Range(-0.5f, 0.5f) * areaSize.x, 0, Random.Range(-0.5f, 0.5f) * areaSize.z);
+                // Area is relative to this spawner, so the farm works wherever it's placed.
+                Vector3 p = transform.TransformPoint(areaCenter + new Vector3(Random.Range(-0.5f, 0.5f) * areaSize.x, 0, Random.Range(-0.5f, 0.5f) * areaSize.z));
                 if (!NavMesh.SamplePosition(p, out NavMeshHit hit, 0.5f, NavMesh.AllAreas)) continue;
-                p = new Vector3(hit.position.x, 0, hit.position.z);
+                p = new Vector3(hit.position.x, transform.position.y, hit.position.z);
                 if (!GridSnap.IsFree(p)) continue;
 
                 GameObject g = Instantiate(grassPrefab, p, Quaternion.Euler(0, Random.Range(0f, 360f), 0));

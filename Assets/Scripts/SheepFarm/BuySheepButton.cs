@@ -11,6 +11,7 @@ namespace SheepFarm
         public Transform spawnPoint;
         public Transform flock;
         public float woolCost = 10;
+        public ErrorPopup errorPopup;
 
         void Start()
         {
@@ -20,7 +21,11 @@ namespace SheepFarm
         void Buy()
         {
             if (!NavMesh.SamplePosition(spawnPoint.position, out NavMeshHit hit, 2f, NavMesh.AllAreas)) return;
-            if (!PlayerResources.Instance.Spend("Wool", woolCost)) return;
+            if (!PlayerResources.Instance.Spend("Wool", woolCost))
+            {
+                errorPopup.Show("Not enough resources!");
+                return;
+            }
 
             // The sheep counts itself in PlayerResources when it starts.
             Instantiate(sheepPrefab, hit.position, Quaternion.Euler(0, Random.Range(0f, 360f), 0), flock);

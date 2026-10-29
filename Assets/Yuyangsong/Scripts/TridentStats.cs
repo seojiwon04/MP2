@@ -12,6 +12,8 @@ public class TridentStats : MonoBehaviour
 
     public Slider sharpnessSlider;
 
+    public FishingInteractionFeedback feedback;
+
     void OnTriggerEnter(Collider other)
     {
         FishStats fish = other.GetComponent<FishStats>();
@@ -19,13 +21,29 @@ public class TridentStats : MonoBehaviour
         if (fish == null)
             return;
 
+        if (sharpness <= 0f)
+        {
+            feedback.Show("Trident dull\nUse Grindstone");
+            return;
+        }
+
         if (Random.value < sharpness)
         {
             FishingResources.Instance.AddFish(fish);
+            feedback.Show($"+{fish.Weight} kg Fish", 1.2f);
             Destroy(fish.gameObject);
+        }
+        else
+        {
+            feedback.Show("Miss", 1.2f);
         }
 
         sharpness = Mathf.Max(0f, sharpness - sharpnessLoss);
+
+        if (sharpness <= 0f)
+        {
+            FishingProgression.Instance.OnTridentDepleted();
+        }
     }
 
     public void Sharpen(float amount)
