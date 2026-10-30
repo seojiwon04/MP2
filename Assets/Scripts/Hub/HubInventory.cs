@@ -6,16 +6,20 @@ using Rishi.OreRoom;
 public class HubInventory : MonoBehaviour
 {
     public TMP_Text inventoryText;
-    public bool startWithDebugResources = false; // turn off before submitting
+    public bool startWithDebugResources = true; // turn off before submitting
     public int debugAmount = 100;
 
-    [Header("Ore room connection")]
     public OreRoom oreRoom;
     public GameObject oreRoomPrefab;
     public Vector3 oreRoomPosition = new Vector3(-40, 0, 0);
     public Vector3 oreRoomEulerAngles = new Vector3(0, -90, 0);
 
     PlayerResources masonResources; // bc Mason already has a UseResource func
+
+    bool woodAdded = false;
+    bool fishAdded = false;
+    bool woolAdded = false;
+    bool ironAdded = false;
 
     private void Awake()
     {
@@ -27,7 +31,7 @@ public class HubInventory : MonoBehaviour
     {
         if (!oreRoom)
         {
-            foreach (var candidate in FindObjectsByType<OreRoom>())
+            foreach (var candidate in FindObjectsByType<OreRoom>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 if (candidate.gameObject.scene == gameObject.scene) { oreRoom = candidate; break; }
         }
         if (!oreRoom && oreRoomPrefab)
@@ -45,36 +49,44 @@ public class HubInventory : MonoBehaviour
         {
             inventoryText = GetComponentInChildren<TMP_Text>();
         }
-
-        if (startWithDebugResources)
-        {
-            AddDebugResources();
-        }
     }
 
     // gives every room debugAmount of its resource
     private void AddDebugResources()
     {
-        masonResources = FindAnyObjectByType<PlayerResources>();
+        if (masonResources == null)
+        {
+            masonResources = FindAnyObjectByType<PlayerResources>();
+        }
         var fish = FishingResources.Instance;
         var farm = SheepFarm.PlayerResources.Instance;
 
-        if (masonResources != null)
+        if (!woodAdded && masonResources != null)
         {
             // set directly instead of AddWood so it doesn't unlock Mason's seed shop
             masonResources.wood += debugAmount;
             masonResources.SpendWood(0); // refreshes Mason's wood text
+            woodAdded = true;
+            Debug.Log("HubInventory: added " + debugAmount + " Wood for debugging");
         }
-        if (fish != null)
+        if (!fishAdded && fish != null)
         {
             fish.fishMeatWeight += debugAmount;
+            fishAdded = true;
+            Debug.Log("HubInventory: added " + debugAmount + " Fish Meat for debugging");
         }
-        if (farm != null)
+        if (!woolAdded && farm != null)
         {
             farm.Add("Wool", debugAmount);
+            woolAdded = true;
+            Debug.Log("HubInventory: added " + debugAmount + " Wool for debugging");
         }
-
-        Debug.Log("HubInventory: added " + debugAmount + " Wood, Wool and Fish Meat for debugging");
+        if (!ironAdded && oreRoom != null && oreRoom.gameObject.activeInHierarchy)
+        {
+            oreRoom.Add("RefinedOre", debugAmount);
+            ironAdded = true;
+            Debug.Log("HubInventory: added " + debugAmount + " Iron for debugging");
+        }
     }
     public bool UseResource(string resource, int amount)
     {
@@ -158,6 +170,11 @@ public class HubInventory : MonoBehaviour
 
     private void Update()
     {
+        if (startWithDebugResources)
+        {
+            AddDebugResources();
+        }
+
         if (masonResources == null) masonResources = FindAnyObjectByType<PlayerResources>();
         var fish = FishingResources.Instance;
         var farm = SheepFarm.PlayerResources.Instance;
@@ -171,6 +188,6 @@ public class HubInventory : MonoBehaviour
             + "Wood: " + wood
             + "\nWool: " + wool
             + "\nFish Meat: " + fishMeat
-            + "\nIRON: " + GetResource("Iron");
+            + "\nIron: " + GetResource("Iron");
     }
 }
