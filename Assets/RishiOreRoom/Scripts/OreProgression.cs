@@ -10,7 +10,6 @@ public class OreProgression : MonoBehaviour {
     float revealEnd;
     int nextStage;
     GameObject furnaceSample;
-    TextMesh vrGoal;
     public string revealText;
     OreInteractable practiceRock, practiceDrill;
     public int practiceLoads;
@@ -29,7 +28,7 @@ public class OreProgression : MonoBehaviour {
         "Mine real iron and collect 3 Iron Ore. The green practice vein is optional.",
         "Mine Coal or Crystal, then smelt your first Bar.",
         "Repair the worn Pickaxe with 1 Bar AND refuel the Lantern with 1 Coal.",
-        "Build Foundation (4), then Drill (1) on the same tile near ore. Reach 2 Drill Output.",
+        "Build a Foundation, then a Drill on the same tile near ore. Reach 2 Drill Output.",
         "Bring 1 forest Wood + 1 Bar to the timber order at the supply desk.",
         "Bring 1 farm Wool + 1 Coal to the insulation order.",
         "Bring 5 kg Fish Meat + 1 Coal to cook the miner's ration.",
@@ -72,13 +71,6 @@ public class OreProgression : MonoBehaviour {
     }
     void Update() {
         if(!room)return;
-        if(room.player && room.player.VR) {
-            if(!vrGoal) { vrGoal=OreVisuals.Label(room.transform,"",Vector3.zero,.012f);vrGoal.GetComponent<OreBillboard>().showDistance=2; }
-            vrGoal.gameObject.SetActive(room.player.InMine);
-            var eye=room.player.view.transform;
-            vrGoal.transform.position=eye.position+eye.forward*1.2f+eye.up*.25f;
-            vrGoal.text=Wrap(revealing?revealText:"MINE GOAL "+stage+"/8: "+Goal,42);
-        }
         if(revealing) {
             if(Time.time>=revealEnd) { stage=nextStage; if(stage==3){repairs=0;refuels=0;} revealing=false; ApplyVisibility(); room.Notify("New goal: "+Goal); }
             return;
@@ -97,7 +89,7 @@ public class OreProgression : MonoBehaviour {
         case 6:pass=insulation;break;
         case 7:pass=ration;break;
         }
-        if(pass && stage<8) { nextStage=stage+1; revealText=reveals[nextStage]; revealEnd=Time.time+3; revealing=true; room.Notify("Mastery threshold cleared!"); }
+        if(pass && stage<8) { nextStage=stage+1; revealText=reveals[nextStage]; revealEnd=Time.time+3; revealing=true; room.Notify("Mastery threshold cleared! "+revealText); }
     }
     void ApplyVisibility() {
         // Keep the actual mine visible. Lessons unlock use, not the existence of the room.

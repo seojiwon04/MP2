@@ -25,11 +25,12 @@ public class OrePlayer : MonoBehaviour {
     GameObject desktopRig,xrRig;
     Camera desktopCamera,xrCamera;
     Transform desktopHand,desktopLeft,xrHand,xrLeft;
-    TextMesh wristReadout;
-    bool rigSelected,trackingReady,gripOwnsTool,previousGather,previousLeftGrip;
-    bool cycleHoldHandled,helmetHoldHandled,waitingWarning;
-    float cycleHoldTime,helmetHoldTime;
-    bool previousGrip,previousTrigger,previousAlt,previousBuild,previousCycle,previousHeadlamp;
+    OreVRPanel vrPanel;
+    readonly OreVRControls vrControls=new OreVRControls();
+    Transform trackingSpace;
+    bool rigSelected,trackingReady,gripOwnsTool,waitingWarning,helmetWasLit;
+    string lastMessage,notice;
+    float noticeUntil;
     bool trackingOriginSet,buildMode,showHelp;
     float pitch,fall,snapCooldown,swingCooldown;
     Vector3 previousPickHead,placement;
@@ -51,8 +52,6 @@ public class OrePlayer : MonoBehaviour {
         xrHand=CreateHand(xrRig.transform,"Tracked Right Controller",true);
         xrLeft=CreateHand(xrRig.transform,"Tracked Left Controller",false);
         beam=xrHand.gameObject.AddComponent<LineRenderer>(); beam.positionCount=2; beam.startWidth=.008f; beam.endWidth=.003f; beam.sharedMaterial=OreVisuals.Material("Ray",Color.cyan);
-        wristReadout=OreVisuals.Label(xrLeft,"",new Vector3(0,.16f,.03f),.014f);
-        var wristLabel=wristReadout.GetComponent<OreBillboard>(); wristLabel.requireFocus=false; wristLabel.showDistance=1.5f;
         SelectRig(r.useDesktopControls);
         ghost=OreVisuals.Part(null,"Grid placement preview",PrimitiveType.Cube,Vector3.zero,new Vector3(.85f,.025f,.85f),OreVisuals.Material("Preview",new Color(.25f,.8f,.55f)),false);
         validTileMaterial=ghost.GetComponent<Renderer>().sharedMaterial;
@@ -66,12 +65,8 @@ public class OrePlayer : MonoBehaviour {
         hand=right?right:camera.transform; leftHand=left?left:camera.transform;
         var origin=camera.GetComponentInParent<Unity.XR.CoreUtils.XROrigin>();
         externalOrigin=origin?origin.transform:camera.transform.root;
+        trackingSpace=origin && origin.CameraFloorOffsetObject?origin.CameraFloorOffsetObject.transform:externalOrigin;
         body=externalOrigin.GetComponentInChildren<CharacterController>();
-        wristReadout=OreVisuals.Label(transform,"",Vector3.zero,.014f);
-        wristReadout.name="Ore wrist readout - room owned";
-        wristReadout.GetComponent<OreBillboard>().requireFocus=false;
-        wristReadout.GetComponent<OreBillboard>().showDistance=2;
-        wristReadout.gameObject.SetActive(false);
         var beamObject=new GameObject("Ore interaction ray"); beamObject.transform.SetParent(transform,false);
         beam=beamObject.AddComponent<LineRenderer>(); beam.positionCount=2; beam.startWidth=.008f; beam.endWidth=.003f; beam.sharedMaterial=OreVisuals.Material("Ray",Color.cyan);
         ghost=OreVisuals.Part(null,"Ore grid preview",PrimitiveType.Cube,Vector3.zero,new Vector3(.85f,.025f,.85f),OreVisuals.Material("Preview",Color.green),false);
@@ -113,7 +108,7 @@ public class OrePlayer : MonoBehaviour {
         else { view=xrCamera; hand=xrHand; leftHand=xrLeft; xrRig.SetActive(true); }
         if(held) AttachHeld();
         if(wornHelmet) { wornHelmet.transform.SetParent(view.transform,false); wornHelmet.transform.localPosition=Vector3.up*.14f; wornHelmet.transform.localRotation=Quaternion.identity; }
-        previousGrip=previousTrigger=previousAlt=previousBuild=previousCycle=previousHeadlamp=previousGather=previousLeftGrip=false;
+        vrControls.Suspend();if(vrPanel!=null)vrPanel.Hide();
         gripOwnsTool=false; trackingReady=false; trackingOriginSet=false; waitingWarning=false;
         buildMode=false; target=null; fall=0; rigSelected=true;
         if(held) previousPickHead=held.transform.TransformPoint(Vector3.up*.35f);
@@ -125,22 +120,87 @@ public class OrePlayer : MonoBehaviour {
         held.transform.localPosition=held.kind==OreKind.Lantern?new Vector3(0,-.32f,.08f):new Vector3(0,-.02f,.1f);
         held.transform.localRotation=Quaternion.identity;
     }
-    void UpdateWrist(string overrideText=null) {
-        if(!wristReadout || !VR) return;
-        string equipment=held?held.kind.ToString()+(held.kind==OreKind.Lantern?" fuel "+held.charge.ToString("0"):
-            held.kind==OreKind.Pickaxe?" durability "+held.durability.ToString("0"):""):"Hand empty";
-        string instruction=buildMode?"Build: "+room.BuildName(buildType)+"\n"+(hasPlacement?(validPlacement?"A / trigger: place":placementReason):"Aim at floor"):
-            "A interact | Y collect\nB build | X headlamp";
-        if(room.progression && room.progression.stage>=5)instruction+="\n"+room.SharedInventory.Summary;
-        wristReadout.text=overrideText??room.ResourcesText()+"\n"+equipment+"\n"+instruction+
-            (string.IsNullOrEmpty(room.message)?"":"\n"+WrapWrist(room.message,38));
+    void EnsurePanel() { if(vrPanel==null)vrPanel=new OreVRPanel(room.transform); }
+    void UpdateVRDisplay(bool anchor=false) {
+        if(!VR || !InMine)return;
+        if(room.message!=lastMessage) {
+            lastMessage=room.message;
+            if(!string.IsNullOrEmpty(lastMessage)) {
+                notice=lastMessage;noticeUntil=Time.unscaledTime+3.5f;
+                if(vrControls.Menu==OreVRMenu.None)anchor=true;
+            }
+        }
+        string content=null;
+        if(vrControls.Menu==OreVRMenu.Building) {
+            content="BUILDING MODE - B closes\nAim at the open central floor.\n\n"
+                +"Right trigger: Foundation (1 Bar)\nLeft trigger: Drill (2 Bars)\n"
+                +"X: Work Light (1 Bar)\nY: Rail (1 Bar)\n\n"
+                +"Preview: "+room.BuildName(buildType)+" | Bars: "+room.Count("IronBar")+"\n"
+                +WrapWrist(hasPlacement?(validPlacement?"Ready on this tile.":placementReason):placementReason,46);
+            if(Time.unscaledTime<noticeUntil)content+="\n\n"+WrapWrist(notice,46);
+        } else if(vrControls.Menu==OreVRMenu.Information) {
+            string[] options={"Inventory and goal","Controller controls","Use held equipment","Repair / refuel held equipment","Remove helmet","Recover equipment to bench"};
+            string detail;
+            switch(vrControls.ToolOption) {
+            case 0:detail=room.ResourcesText()+"\n\n"+(room.progression?room.progression.Goal:"")+"\n\n"+room.SharedInventory.Summary;break;
+            case 1:detail="Right grip: hold equipment; release: drop\nRight trigger: interact / mine / use\nLeft trigger: alternate aimed object\nB: building mode | X: headlamp\nY: collect drops | Left grip: this panel\nA and joysticks: shared rig controls";break;
+            case 2:detail="Right trigger here operates the item you hold, regardless of where you aim.";break;
+            case 3:detail="Right trigger here repairs the held Pickaxe (1 Bar), or refuels the held Lantern (1 Coal). Aim does not change this action.";break;
+            case 4:detail="Right trigger here returns the helmet to the bench.";break;
+            default:detail="Right trigger here returns equipment to its bench. Fuel, durability and inventory are not reset.";break;
+            }
+            content="MINE INFORMATION / TOOLS\nLeft grip closes | Left trigger: next page\nRight trigger: use selected option\n\n"
+                +(vrControls.ToolOption+1)+" / "+options.Length+": "+options[vrControls.ToolOption]+"\n\n"+WrapWrist(detail,46);
+            if(Time.unscaledTime<noticeUntil)content+="\n\n"+WrapWrist(notice,46);
+        } else if(Time.unscaledTime<noticeUntil && !string.IsNullOrEmpty(notice))
+            content=WrapWrist(notice,46)+"\n\nLeft grip: information / tools | B: build";
+        if(content==null) { if(vrPanel!=null)vrPanel.Hide();return; }
+        EnsurePanel();if(anchor)vrPanel.Anchor(view);vrPanel.Show(content);
+    }
+    void ConfirmToolOption() {
+        switch(vrControls.ToolOption) {
+        case 0:case 1:return;
+        case 2:UseEquipment(false);break;
+        case 3:
+            if(held && (held.kind==OreKind.Pickaxe || held.kind==OreKind.Lantern))held.Use(this,true);
+            else room.Notify("Hold the Pickaxe to repair it, or the Lantern to refuel it.");
+            break;
+        case 4:if(wornHelmet)RemoveHelmet();else room.Notify("No helmet is equipped.");break;
+        case 5:RecoverEquipment();break;
+        }
+    }
+    void RecoverEquipment() {
+        if(held)ReturnHeldToBench();if(wornHelmet)RemoveHelmet();
+        foreach(var item in room.GetComponentsInChildren<OreInteractable>(true)) {
+            if(!item.grabbable)continue;
+            Vector3 position=item.kind==OreKind.Pickaxe?new Vector3(-2,1.55f,-3):
+                item.kind==OreKind.Helmet?new Vector3(0,1,-3):new Vector3(2,1,-3);
+            item.transform.SetPositionAndRotation(room.World(position),room.transform.rotation);
+            foreach(var collider in item.GetComponentsInChildren<Collider>())collider.enabled=true;
+            foreach(var renderer in item.GetComponentsInChildren<Renderer>())renderer.enabled=true;
+            var rb=item.GetComponent<Rigidbody>();if(rb) { if(!rb.isKinematic) { rb.linearVelocity=Vector3.zero;rb.angularVelocity=Vector3.zero; } rb.isKinematic=true;rb.useGravity=false; }
+        }
+        room.Notify("Equipment returned to the bench. Fuel, durability and resources are unchanged.");
+    }
+    Ray AimRay() {
+        // A bad tracking-space offset would put the pointer far from the actual hand.
+        // Use the shared rig's tracked controller transform in that case.
+        if(VR && externalRig && OreVRInput.TryAim(trackingSpace,out Ray ray) &&
+            hand && Vector3.Distance(ray.origin,hand.position)<.75f)return ray;
+        var aim=VR?hand:view.transform;return new Ray(aim.position,aim.forward);
     }
     static string WrapWrist(string text,int width) {
+        if(string.IsNullOrEmpty(text))return "";
         var builder=new System.Text.StringBuilder(); int column=0;
-        foreach(var word in text.Split(' ')) {
-            if(column>0 && column+word.Length+1>width) { builder.Append('\n'); column=0; }
-            if(column>0) { builder.Append(' '); column++; }
-            builder.Append(word); column+=word.Length;
+        var lines=text.Split('\n');
+        for(int line=0;line<lines.Length;line++) {
+            if(line>0)builder.Append('\n');
+            column=0;
+            foreach(var word in lines[line].Split(new[]{' '},System.StringSplitOptions.RemoveEmptyEntries)) {
+                if(column>0 && column+word.Length+1>width) { builder.Append('\n'); column=0; }
+                if(column>0) { builder.Append(' '); column++; }
+                builder.Append(word); column+=word.Length;
+            }
         }
         return builder.ToString();
     }
@@ -148,37 +208,41 @@ public class OrePlayer : MonoBehaviour {
         if(device.TryGetFeatureValue(CommonUsages.devicePosition,out Vector3 p)) t.localPosition=p+(trackingOriginSet?Vector3.zero:Vector3.up*1.65f);
         if(device.TryGetFeatureValue(CommonUsages.deviceRotation,out Quaternion q)) t.localRotation=q;
     }
-    static bool Button(UnityEngine.XR.InputDevice d,InputFeatureUsage<bool> usage) { return d.TryGetFeatureValue(usage,out bool value)&&value; }
     void Update() {
         if(!room || !view) return;
         if(externalRig) {
             bool inside=InMine;
             if(!inside) {
                 if(wasInside && held)ReturnHeldToBench();
-                if(wornHelmet && wornHelmet.lamp)wornHelmet.lamp.enabled=false;
+                if(wasInside && wornHelmet && wornHelmet.lamp) { helmetWasLit=wornHelmet.lamp.enabled;wornHelmet.lamp.enabled=false; }
                 wasInside=false;target=null;hasPlacement=false;
                 if(ghost)ghost.SetActive(false);if(beam)beam.enabled=false;
-                if(wristReadout)wristReadout.gameObject.SetActive(false);
+                vrControls.Suspend();buildMode=false;if(vrPanel!=null)vrPanel.Hide();
+                noticeUntil=0;lastMessage=room.message;
                 return;
             }
+            if(!wasInside) {
+                if(wornHelmet && wornHelmet.lamp)wornHelmet.lamp.enabled=helmetWasLit;
+                room.Notify("B: building mode. Left grip: information / tools. Right trigger: interact.");
+            }
             wasInside=true;
-            if(wristReadout)wristReadout.gameObject.SetActive(true);
             FollowExternalEquipment();
         }
         var kb=Keyboard.current; var mouse=Mouse.current;
         if(!externalRig && kb!=null && kb.f8Key.wasPressedThisFrame) room.useDesktopControls=!room.useDesktopControls;
         if(!externalRig && (!rigSelected || VR==room.useDesktopControls)) SelectRig(room.useDesktopControls);
         var head=InputDevices.GetDeviceAtXRNode(XRNode.Head);
-        bool tracked=head.TryGetFeatureValue(CommonUsages.isTracked,out bool tracking)&&tracking;
-        trackingReady=head.isValid && tracked && XRSettings.isDeviceActive;
+        trackingReady=OreVRInput.HeadTracked;
         bool grab=false,drop=false,use=false,alternate=false,build=false,equipment=false,toggleHeadlamp=false,removeHelmet=false;
         bool interact=false,gather=false;
+        bool menuChanged=false,confirmTool=false;
+        int vrBuild=-1;
         snapCooldown-=Time.deltaTime;
         if(VR) {
-            if(!trackingReady) {
+            if(!trackingReady || !OreVRInput.HandTracked(true) || !OreVRInput.HandTracked(false)) {
                 target=null; hasPlacement=validPlacement=false; ghost.SetActive(false); beam.enabled=false;
-                UpdateWrist("VR selected\nWaiting for tracked headset\nCheck OpenXR setup");
-                if(!waitingWarning) { Debug.LogWarning("Ore room VR selected: waiting for a tracked headset. Enable OpenXR, select the Touch interaction profile, and connect the headset. For keyboard testing check Use Desktop Controls on the room."); waitingWarning=true; }
+                vrControls.Suspend();buildMode=false;if(vrPanel!=null)vrPanel.Hide();
+                if(!waitingWarning) { Debug.LogWarning("Ore room is waiting for a tracked headset and both Touch controllers. The room leaves shared-rig locomotion unchanged."); waitingWarning=true; }
                 return;
             }
             waitingWarning=false;
@@ -190,31 +254,12 @@ public class OrePlayer : MonoBehaviour {
             if(!externalRig)Pose(head,view.transform);
             var right=InputDevices.GetDeviceAtXRNode(XRNode.RightHand); var left=InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
             if(!externalRig) { Pose(right,hand); Pose(left,leftHand); }
-            bool grip=Button(right,CommonUsages.gripButton),trigger=Button(right,CommonUsages.triggerButton),alt=Button(left,CommonUsages.triggerButton);
-            bool place=Button(right,CommonUsages.primaryButton),cycle=Button(right,CommonUsages.secondaryButton),helmet=Button(left,CommonUsages.primaryButton);
-            bool collect=Button(left,CommonUsages.secondaryButton),leftGrip=Button(left,CommonUsages.gripButton);
-            grab=grip&&!previousGrip; drop=!grip&&previousGrip&&gripOwnsTool;
-            use=trigger&&!previousTrigger; alternate=alt&&!previousAlt;
-            if(place&&!previousBuild) { if(buildMode) build=true; else interact=true; }
-            gather=collect&&!previousGather;
-            // Left grip operates held equipment independently of what the pointer is targeting.
-            equipment=leftGrip&&!previousLeftGrip;
-            if(cycle&&!previousCycle) { cycleHoldTime=0; cycleHoldHandled=false; }
-            if(cycle) {
-                cycleHoldTime+=Time.deltaTime;
-                if(cycleHoldTime>=.6f && !cycleHoldHandled) { buildMode=false; cycleHoldHandled=true; room.Notify("Building mode closed."); }
-            }
-            if(!cycle&&previousCycle&&!cycleHoldHandled) {
-                if(buildMode) buildType=(buildType+1)%OreRoom.names.Length; else buildMode=true;
-            }
-            if(helmet&&!previousHeadlamp) { helmetHoldTime=0; helmetHoldHandled=false; }
-            if(helmet) {
-                helmetHoldTime+=Time.deltaTime;
-                if(helmetHoldTime>=.8f && !helmetHoldHandled) { removeHelmet=true; helmetHoldHandled=true; }
-            }
-            if(!helmet&&previousHeadlamp&&!helmetHoldHandled) toggleHeadlamp=true;
-            previousGrip=grip; previousTrigger=trigger; previousAlt=alt; previousBuild=place; previousCycle=cycle;
-            previousHeadlamp=helmet; previousGather=collect; previousLeftGrip=leftGrip;
+            var command=vrControls.Step(OreVRInput.Poll());
+            grab=command.grab;drop=command.release && gripOwnsTool;
+            use=command.use;alternate=command.alternate;gather=command.collect;toggleHeadlamp=command.lamp;
+            vrBuild=command.place;confirmTool=command.confirm;menuChanged=command.menuChanged;
+            buildMode=vrControls.Menu==OreVRMenu.Building;
+            if(buildMode)buildType=vrControls.BuildType;
             // Update capsule geometry before movement for floor-height and room-scale tracking.
             if(!externalRig) {
             body.height=Mathf.Clamp(view.transform.localPosition.y,1,2.2f);
@@ -246,36 +291,47 @@ public class OrePlayer : MonoBehaviour {
             leftHand.position=view.transform.TransformPoint(new Vector3(-.28f,-.23f,.6f)); leftHand.rotation=view.transform.rotation;
             use=mouse!=null&&mouse.leftButton.wasPressedThisFrame; alternate=mouse!=null&&mouse.rightButton.wasPressedThisFrame;
         }
-        if(consumedInputFrame==Time.frameCount || (room.integratedRoom && !InMine)) { target=null; ghost.SetActive(false); beam.enabled=false; return; }
-        Transform aim=VR?hand:view.transform;
+        if(consumedInputFrame==Time.frameCount || (room.integratedRoom && !InMine)) { target=null; ghost.SetActive(false); beam.enabled=false;if(vrPanel!=null)vrPanel.Hide(); return; }
+        Ray aim=AimRay();
         target=FindTarget(aim);
-        if(VR) { var near=NearHand(); if(near) target=near; }
-        hasPlacement=buildMode && room.TryGetGridTile(new Ray(aim.position,aim.forward),6f,out placement);
-        placementReason=hasPlacement?room.BuildBlockedReason(placement,buildType):"Aim at a floor tile within 6 meters.";
+        hasPlacement=buildMode && room.TryGetGridTile(aim,10f,out placement);
+        placementReason=hasPlacement?room.BuildBlockedReason(placement,buildType):VR?
+            "Point the right controller down at the central cave floor (within 10 meters).":
+            "Aim at the central cave floor (within 10 meters).";
         validPlacement=hasPlacement && string.IsNullOrEmpty(placementReason);
         beam.enabled=VR;
-        beam.SetPosition(0,aim.position);
-        beam.SetPosition(1,buildMode && hasPlacement?placement:target?target.transform.position:aim.position+aim.forward*interactDistance);
+        beam.SetPosition(0,aim.origin);
+        beam.SetPosition(1,buildMode && hasPlacement?placement:target?target.transform.position:aim.origin+aim.direction*interactDistance);
         ghost.SetActive(buildMode && hasPlacement); ghost.transform.SetPositionAndRotation(placement,room.transform.rotation);
         if(tileRenderer) tileRenderer.sharedMaterial=validPlacement?validTileMaterial:invalidTileMaterial;
         // Building clicks have one meaning and never also mine or use equipment.
-        if(buildMode && (use || build)) {
+        if(buildMode && (use || build || vrBuild>=0)) {
             if(hasPlacement) room.Build(placement,buildType); else room.Notify(placementReason);
             use=false; build=false;
         }
-        if(target) room.Encounter(target);
         if(drop) { Drop(); gripOwnsTool=false; }
+        if(VR && vrControls.Menu!=OreVRMenu.None) {
+            target=null;
+            if(vrControls.Menu==OreVRMenu.Information) { beam.enabled=false;if(confirmTool)ConfirmToolOption(); }
+            previousPickHead=held?held.transform.TransformPoint(Vector3.up*.35f):Vector3.zero;
+            UpdateVRDisplay(menuChanged);return;
+        }
+        // A menu-toggle press is consumed, even when that press closes the menu.
+        if(VR && menuChanged) { UpdateVRDisplay(true);return; }
+        if(target) room.Encounter(target);
         if(grab) {
-            if(target && target.grabbable) { Grab(target); gripOwnsTool=held!=null; }
+            var equipmentTarget=NearHand();
+            if(!equipmentTarget && target && target.grabbable)equipmentTarget=target;
+            if(equipmentTarget) { Grab(equipmentTarget); gripOwnsTool=held!=null; }
             else if(held) gripOwnsTool=true;
-            else room.Notify("Grip grabs equipment. A interacts; Y collects drops.");
+            else room.Notify("Right grip grabs equipment. Right trigger interacts; Y collects drops.");
         }
         if(interact) {
             if(TryRoomAction(aim)) { use=false; }
             else if(target && target.grabbable) Grab(target);
             else if((!target || IsOre(target) || target.kind==OreKind.Chunk) && CollectNearbyDrops()) { }
             else if(target) target.Use(this);
-            else room.Notify(VR?"Aim at an object, or press Y near dropped resources.":"Move within 4 meters of dropped ore, or aim at equipment.");
+            else room.Notify(VR?"Point the right controller at an object, or press Y near dropped resources.":"Move within 4 meters of dropped ore, or aim at equipment.");
         }
         if(gather && !CollectNearbyDrops()) room.Notify("No visible dropped resources within 4 meters.");
         if(equipment) UseEquipment(false);
@@ -290,32 +346,33 @@ public class OrePlayer : MonoBehaviour {
         }
 
         SwingPickaxe();
-        UpdateWrist();
+        UpdateVRDisplay();
     }
-    OreInteractable FindTarget(Transform aim) {
+    OreInteractable FindTarget(Ray aim) {
         // Wide aim assistance, with geometry obstruction and player-owned colliders excluded.
-        var hits=Physics.SphereCastAll(aim.position,.16f,aim.forward,interactDistance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide);
+        var hits=Physics.SphereCastAll(aim.origin,.16f,aim.direction,interactDistance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide);
         System.Array.Sort(hits,(a,b)=>a.distance.CompareTo(b.distance));
         foreach(var hit in hits) {
             if(IsPlayerCollider(hit.collider)) continue;
             var obj=hit.collider.GetComponentInParent<OreInteractable>();
             if(obj && obj.kind==OreKind.Chunk && (obj.collected || obj.reservedForDrill)) continue;
-            if(obj && !IsCarried(obj)) return obj;
+            if(obj && IsCarried(obj))continue;
+            if(obj && obj.room==room) return obj;
             if(!hit.collider.isTrigger) break;
         }
         return FindDropTarget(aim);
     }
-    OreInteractable FindDropTarget(Transform aim) {
+    OreInteractable FindDropTarget(Ray aim) {
         // Drops get a separate, much wider aim cone; tools and mining keep their old range.
         OreInteractable best=null; float bestScore=float.MaxValue;
-        foreach(var collider in Physics.OverlapSphere(aim.position,droppedResourceRange,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide)) {
+        foreach(var collider in Physics.OverlapSphere(aim.origin,droppedResourceRange,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide)) {
             var drop=collider.GetComponentInParent<OreInteractable>();
-            if(!drop || drop.kind!=OreKind.Chunk || drop.collected || drop.reservedForDrill) continue;
-            Vector3 delta=drop.transform.position-aim.position;
+            if(!drop || drop.room!=room || drop.kind!=OreKind.Chunk || drop.collected || drop.reservedForDrill) continue;
+            Vector3 delta=drop.transform.position-aim.origin;
             if(delta.sqrMagnitude>droppedResourceRange*droppedResourceRange) continue;
-            float along=Vector3.Dot(delta,aim.forward);
+            float along=Vector3.Dot(delta,aim.direction);
             if(along<=0) continue;
-            float sideways=(delta-aim.forward*along).magnitude;
+            float sideways=(delta-aim.direction*along).magnitude;
             if(sideways>.65f+along*.25f || !CanSeeDrop(drop)) continue;
             float score=delta.sqrMagnitude+sideways*sideways*2;
             if(score<bestScore) { best=drop; bestScore=score; }
@@ -340,7 +397,7 @@ public class OrePlayer : MonoBehaviour {
         var seen=new System.Collections.Generic.HashSet<OreInteractable>();
         foreach(var collider in Physics.OverlapSphere(center,nearbyCollectRange,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide)) {
             var drop=collider.GetComponentInParent<OreInteractable>();
-            if(!drop || drop.kind!=OreKind.Chunk || drop.collected || drop.reservedForDrill || !seen.Add(drop)) continue;
+            if(!drop || drop.room!=room || drop.kind!=OreKind.Chunk || drop.collected || drop.reservedForDrill || !seen.Add(drop)) continue;
             if((drop.transform.position-center).sqrMagnitude>nearbyCollectRange*nearbyCollectRange || !CanSeeDrop(drop)) continue;
             drop.Use(this); count++;
         }
@@ -351,17 +408,15 @@ public class OrePlayer : MonoBehaviour {
         OreInteractable best=null; float distance=float.MaxValue;
         foreach(var collider in Physics.OverlapSphere(hand.position,.23f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide)) {
             var obj=collider.GetComponentInParent<OreInteractable>();
-            if(!obj || !obj.grabbable || IsCarried(obj)) continue;
+            if(!obj || obj.room!=room || !obj.grabbable || IsCarried(obj)) continue;
             float d=(collider.ClosestPoint(hand.position)-hand.position).sqrMagnitude;
             if(d<distance) { distance=d; best=obj; }
         }
         return best;
     }
     void PrimaryUse() {
-        // Lantern operation always wins while it is held; E / grip can still use stations.
-        if(held && held.kind==OreKind.Lantern) { held.Use(this); return; }
         if(target) {
-            if(target.grabbable) { if(!held) Grab(target); else UseEquipment(false); }
+            if(target.grabbable) { Grab(target);gripOwnsTool=false; }
             else target.Use(this);
         } else UseEquipment(false);
     }
@@ -405,7 +460,7 @@ public class OrePlayer : MonoBehaviour {
         if(held) Drop();
         held=obj; MakeCarried(obj); AttachHeld();
         previousPickHead=obj.transform.TransformPoint(Vector3.up*.35f);
-        room.Notify(obj.kind==OreKind.Lantern?"Lantern grabbed. F / trigger toggles light; alternate refuels.":"Pickaxe grabbed. Aim at ore and click / trigger.");
+        room.Notify(obj.kind==OreKind.Lantern?"Lantern grabbed. Use it with the right trigger while pointing away from stations; left trigger refuels. Left grip opens tool options.":"Pickaxe grabbed. Aim at ore and press the right trigger. Repair through Left grip > Repair / refuel.");
     }
     public void Drop() {
         if(!held) return;
@@ -431,7 +486,8 @@ public class OrePlayer : MonoBehaviour {
         else { helmet.transform.localPosition=Vector3.up*.14f; helmet.transform.localRotation=Quaternion.identity; }
         foreach(var r in helmet.GetComponentsInChildren<Renderer>()) r.enabled=false;
         if(helmet.lamp) helmet.lamp.enabled=true;
-        room.Notify("Helmet equipped. H / left primary button toggles headlamp.");
+        helmetWasLit=true;
+        room.Notify(VR?"Helmet equipped. X toggles its headlamp. Left grip > Remove helmet returns it to the bench.":"Helmet equipped. H toggles its headlamp.");
     }
     // Retain this entry point for any scene references to the older script.
     public void ToggleHelmet(OreInteractable helmet) { if(wornHelmet==helmet) RemoveHelmet(); else EquipHelmet(helmet); }
@@ -460,8 +516,8 @@ public class OrePlayer : MonoBehaviour {
     bool IsPlayerCollider(Collider c) {
         return c.transform.IsChildOf(transform) || externalRig && externalOrigin && c.transform.IsChildOf(externalOrigin);
     }
-    bool TryRoomAction(Transform aim) {
-        var hits=Physics.SphereCastAll(aim.position,.12f,aim.forward,interactDistance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide);
+    bool TryRoomAction(Ray aim) {
+        var hits=Physics.SphereCastAll(aim.origin,.12f,aim.direction,interactDistance,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Collide);
         System.Array.Sort(hits,(a,b)=>a.distance.CompareTo(b.distance));
         foreach(var hit in hits) {
             if(IsPlayerCollider(hit.collider))continue;
@@ -480,19 +536,19 @@ public class OrePlayer : MonoBehaviour {
             held.transform.SetPositionAndRotation(hand.TransformPoint(offset),hand.rotation);
         }
         if(wornHelmet)wornHelmet.transform.SetPositionAndRotation(view.transform.position+view.transform.up*.14f,view.transform.rotation);
-        if(wristReadout && leftHand)wristReadout.transform.position=leftHand.TransformPoint(new Vector3(0,.16f,.03f));
     }
-    void LateUpdate() { FollowExternalEquipment(); }
+    void LateUpdate() { FollowExternalEquipment();if(vrPanel!=null)vrPanel.Fit(); }
     void OnDisable() {
         Application.onBeforeRender-=BeforeRender;
         if(beam)beam.enabled=false;if(ghost)ghost.SetActive(false);
-        if(wristReadout)wristReadout.gameObject.SetActive(false);
+        vrControls.Suspend();buildMode=false;if(vrPanel!=null)vrPanel.Hide();
     }
     void OnDestroy() {
         if(!externalRig) { Cursor.lockState=CursorLockMode.None;Cursor.visible=true; }
         if(held && room)ReturnHeldToBench();
         if(wornHelmet && room)RemoveHelmet();
         if(ghost)Destroy(ghost);if(invalidTileMaterial)Destroy(invalidTileMaterial);
+        if(vrPanel!=null)vrPanel.Dispose();
     }
     public bool IsPlayerBody(Collider c) { return IsPlayerCollider(c); }
     public bool IsFocused(OreInteractable obj) { return obj && target==obj; }

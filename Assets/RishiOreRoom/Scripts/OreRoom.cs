@@ -37,10 +37,14 @@ public class OreRoom : MonoBehaviour {
     bool alternateRoute;
     System.Random random;
     public static readonly string[] names = { "Drill", "WorkLight", "Rail", "Foundation" };
+    const string VRControlSign="VR: grip grab / release drop\nRight trigger: interact | Left trigger: alternate\nY: collect | X: headlamp | Left grip: tools\nB: toggle building mode\nBUILD: Right trigger Foundation | Left trigger Drill\nX Work Light | Y Rail";
     void Awake() {
         random = new System.Random(randomSeed);
         foreach(var key in new[]{"IronOre","Coal","Crystal","IronBar","RefinedOre"}) resources[key]=0;
         if(transform.Find("Cave floor")) BindLayout(); else CreateLayout();
+        // Update the saved prefab's old control sign without modifying the shared hub scene.
+        foreach(var label in GetComponentsInChildren<TextMesh>(true))
+            if(label.text.Contains("VR: grip grab"))label.text=VRControlSign;
         if(spawnTestPlayer) {
             var p=new GameObject("Rishi test player (desktop + XR)"); p.transform.position=World(spawn);
             player=p.AddComponent<OrePlayer>(); player.Init(this);
@@ -105,22 +109,22 @@ public class OreRoom : MonoBehaviour {
         switch(obj.kind) {
         case OreKind.Pickaxe:
             if(Teach("GrabTool","Grab the pickaxe to use it as a mining tool.",obj)) return;
-            Teach("RepairTool","Alternate-use a held pickaxe to spend 1 Bar and restore Durability.",obj); break;
+            Teach("RepairTool",player.VR?"Repair: Left grip opens tools. Left trigger selects Repair / refuel; right trigger confirms. Costs 1 Bar.":"Alternate-use a held pickaxe to spend 1 Bar and restore Durability.",obj); break;
         case OreKind.Helmet:
             if(Teach("WearHelmet","Pick up the helmet to wear it and turn on its headlamp.",obj)) return;
-            Teach("Headlamp","H / tap X toggles the headlamp; desktop X / hold controller X removes the helmet.",obj); break;
+            Teach("Headlamp",player.VR?"X toggles the headlamp. Remove the helmet using Left grip > Remove helmet > Right trigger.":"H toggles the headlamp; desktop X removes the helmet.",obj); break;
         case OreKind.Lantern:
             if(Teach("LanternToggle","Use a held lantern to toggle its light; its Fuel falls while lit.",obj)) return;
             Teach("LanternRefuel","Alternate-use the held lantern to spend 1 Coal and restore Fuel.",obj); break;
         case OreKind.Iron: case OreKind.Coal: case OreKind.Crystal:
             if(Teach("Harvest:"+obj.resource,"Mine "+obj.resource+" with the held pickaxe; collect the fragments for resources.",obj)) return;
             Teach("ShatterAndDeath","Mining creates collectible fragments. At zero Remaining Material, the deposit disappears.",obj); break;
-        case OreKind.Chunk: Teach("CollectDrops","E / Y collects nearby dropped resources without precise aiming.",obj); break;
+        case OreKind.Chunk: Teach("CollectDrops",player.VR?"Y collects nearby drops when building mode is OFF. B toggles building mode.":"E collects nearby dropped resources without precise aiming.",obj); break;
         case OreKind.Smelter:
             if(Teach("SmeltCoal","Normal use: 2 Iron Ore + 1 Coal makes 1 Bar.",obj)) return;
             if(Teach("SmeltCrystal","Alternate use: 1 Iron Ore + 1 Crystal makes 1 Bar.",obj)) return;
             Teach("SmelterHeat","Crafting raises Smelter Heat; it cools over time.",obj); break;
-        case OreKind.Foundation: Teach("Foundation","Build this plate first, then place a drill on the SAME tile. Supported Machines rises to 1.",obj); break;
+        case OreKind.Foundation: Teach("Foundation","Build this plate first, then place a drill on the SAME tile. "+(player.VR?"B: building mode. Right trigger: Foundation; left trigger: Drill.":"Supported Machines rises to 1."),obj); break;
         case OreKind.Drill:
             if(Teach("AutomaticDrill","Drill Fuel falls as the bit turns. Nearby ore is mined automatically; Drill Output counts successful units.",obj)) return;
             Teach("CollisionFuel","Alternate-use this drill to drop 1 Coal into its yellow hopper. Contact consumes the fragment and raises Fuel.",obj); break;
@@ -128,6 +132,7 @@ public class OreRoom : MonoBehaviour {
             if(Teach("WorkLight","Place a work light on the grid, then use it to toggle illumination.",obj)) return;
             Teach("WorkLightRefuel","Alternate-use a work light to spend 1 Coal and restore its Fuel.",obj); break;
         case OreKind.Cart:
+            if(progression && progression.stage<8)break;
             if(Teach("CartTrade","Use the bars on this cart: spend 1 Bar to receive 2 Refined Ore.",obj)) return;
             Teach("CartPath","The cart follows the curved rail route into the fenced upper mine and back.",obj); break;
         case OreKind.Gate: Teach("BuildBypass","Build the missing rail at (0,3), then use this lever to close the main route and send the cart down the bypass.",obj); break;
@@ -203,11 +208,11 @@ public class OreRoom : MonoBehaviour {
     }
     public string BuildBlockedReason(Vector3 p,int type) {
         var cell=GridCell(Local(p));
-        if(progression && !progression.CanBuild(type))return "This building is locked. Complete the current mine goal first.";
         if(type<0 || type>=names.Length) return "Choose a building first.";
+        if(progression && !progression.CanBuild(type))return "This building is locked. Complete the current mine goal first.";
         if(Mathf.Abs(cell.x)>4 || cell.y < -1 || cell.y>4) return "Outside the building area. Aim at the open central cave floor.";
         bool hasFoundation=foundations.ContainsKey(cell);
-        if(type==0 && !hasFoundation) return "Build a Foundation first (4 / build menu).";
+        if(type==0 && !hasFoundation) return player && player.VR?"Build a Foundation first: in building mode, press the RIGHT trigger on this tile.":"Build a Foundation first (4 / build menu).";
         if(type==3 && hasFoundation) return "This tile already has a Foundation.";
         if(hasFoundation && type!=0 && type!=3) return "This Foundation supports a Drill. Put lights and rails on a different tile.";
         if(occupied.Contains(cell)) return "A building already occupies this tile. Select a clear tile instead.";
@@ -283,7 +288,7 @@ public class OreRoom : MonoBehaviour {
         OreVisuals.Part(transform,"Workbench",PrimitiveType.Cube,new Vector3(0,.85f,-3),new Vector3(5.5f,.15f,.9f),wood);
         for(int s=-1;s<=1;s+=2) OreVisuals.Part(transform,"Bench legs",PrimitiveType.Cube,new Vector3(s*2.3f,.4f,-3),new Vector3(.15f,.8f,.7f),wood);
         OreVisuals.Label(transform,"ORE MINE\nEquipment bench",new Vector3(0,2,-5.8f),.13f);
-        OreVisuals.Label(transform,"VR: grip grab / release drop\nA interact | Y collect drops\nX headlamp / hold X remove helmet\nB build menu / hold B exit",new Vector3(4,1.8f,-5.7f),.045f);
+        OreVisuals.Label(transform,VRControlSign,new Vector3(4,1.8f,-5.7f),.045f);
         for(int x=-4;x<=4;x+=4) {
             var g=new GameObject("Warm cave lamp"); g.transform.SetParent(transform,false); g.transform.localPosition=new Vector3(x,3.1f,-1);
             var l=g.AddComponent<Light>(); l.type=LightType.Point; l.color=new Color(1,.69f,.34f); l.range=3; l.intensity=.04f;
