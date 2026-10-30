@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class FishCutter : MonoBehaviour
 {
+    public Transform roomRoot;
+
     public GameObject fishMeatPrefab;
     public Transform spawnPoint;
     public FishDispenser dispenser;
@@ -11,8 +13,11 @@ public class FishCutter : MonoBehaviour
         GameObject meat = Instantiate(
             fishMeatPrefab,
             spawnPoint.position,
-            spawnPoint.rotation
+            spawnPoint.rotation,
+            roomRoot
         );
+
+        meat.transform.localScale = fishMeatPrefab.transform.localScale;
 
         dispenser.currentMeat = meat;
 

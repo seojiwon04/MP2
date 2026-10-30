@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class LiftNetInstaller : MonoBehaviour
 {
+    public Transform roomRoot;
     public GameObject liftNetPrefab, sandboxCanvas;
     public Transform spawnPoint;
     public int woodCost = 5;
@@ -49,8 +50,11 @@ public class LiftNetInstaller : MonoBehaviour
         currentNet = Instantiate(
             liftNetPrefab,
             spawnPoint.position,
-            spawnPoint.rotation
+            spawnPoint.rotation,
+            roomRoot
         );
+
+        currentNet.transform.localScale = liftNetPrefab.transform.localScale;
 
         if (isSandbox)
         {
