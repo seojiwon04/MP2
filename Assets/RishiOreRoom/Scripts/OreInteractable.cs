@@ -121,7 +121,7 @@ public class OreInteractable : MonoBehaviour {
         switch (kind) {
         case OreKind.Iron: case OreKind.Coal: case OreKind.Crystal: return "Use held pickaxe to mine " + resource;
         case OreKind.Pickaxe: return "Grab pickaxe; aim at ore to mine";
-        case OreKind.Helmet: return "Pick up to wear helmet; H / left primary toggles light";
+        case OreKind.Helmet: return room && room.player && room.player.VR?"Right trigger / grip: wear helmet; X: headlamp":"Pick up to wear helmet; H toggles light";
         case OreKind.Lantern: return "Grab lantern; use toggles; alternate refuels (1 Coal)";
         case OreKind.Chunk: return "Collect " + resource;
         case OreKind.Smelter: return "Use: 2 Iron Ore + 1 Coal -> 1 Bar; alternate: 1 Iron Ore + 1 Crystal -> 1 Bar";
@@ -135,11 +135,14 @@ public class OreInteractable : MonoBehaviour {
     }
     public void Use(OrePlayer player, bool alternate = false) {
         if (!room) return;
-        if(room.progression && !room.progression.CanUse(kind)) { room.Notify(room.progression.LockedReason(kind)); return; }
+        // A player who already has a Bar can trade it at the cart early. Keep the
+        // cart's lesson, labels and every other unlock at their original stage.
+        bool earlyCartTrade=kind==OreKind.Cart && room.Count("IronBar")>0;
+        if(room.progression && !room.progression.CanUse(kind) && !earlyCartTrade) { room.Notify(room.progression.LockedReason(kind)); return; }
         switch (kind) {
         case OreKind.Iron: case OreKind.Coal: case OreKind.Crystal:
             if (player.held && player.held.kind == OreKind.Pickaxe && player.held.durability > 0 && cooldown <= 0 && remaining > 0) { if(!practiceVein)player.held.durability = Mathf.Max(0, player.held.durability - (room.rationSeconds>0?.5f:1)); Mine(true); }
-            else if(player.held && player.held.durability<=0)room.Notify("Pickaxe is worn out. Smelt a Bar, then right-click the held pickaxe to repair it.");
+            else if(player.held && player.held.durability<=0)room.Notify(player.VR?"Pickaxe worn out. Smelt a Bar, then Left grip > Repair / refuel held equipment > Right trigger.":"Pickaxe is worn out. Smelt a Bar, then right-click the held pickaxe to repair it.");
             else if(!player.held || player.held.kind!=OreKind.Pickaxe) room.Notify("Grab the pickaxe first."); break;
         case OreKind.Pickaxe:
             if (alternate && room.Spend("IronBar",1)) { durability = 100; if(room.progression)room.progression.repairs++; room.Notify("Pickaxe repaired."); } break;
@@ -161,7 +164,7 @@ public class OreInteractable : MonoBehaviour {
             if(alternate) room.FeedDrill(this);
             else if(charge<100 && room.Spend("Coal",1)) charge=Mathf.Min(100,charge+40);
             break;
-        case OreKind.Foundation: room.Notify("Foundation supports "+supportedMachines+" drill. Place a drill on this tile with 1 / the build menu."); break;
+        case OreKind.Foundation: room.Notify("Foundation supports "+supportedMachines+" drill. "+(player.VR?"Press B for building mode, aim at this tile, then press the LEFT trigger for a Drill.":"Place a drill on this tile with 1 / the build menu.")); break;
         case OreKind.Gate: room.ToggleRoute(); break;
         case OreKind.Cart: room.Exchange("IronBar",1,null,0,"RefinedOre",2); break;
         }
