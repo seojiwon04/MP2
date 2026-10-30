@@ -4112,8 +4112,8 @@ MonoBehaviour:
   fishWeight: 0
   fishMeatWeight: 0
   coins: 0
-  wood: 10
-  iron: 5
+  hubInventory: {fileID: 0}
+  forestResources: {fileID: 0}
   totalFish: 0
   totalFishMeat: 0
   totalCoins: 0
@@ -10645,38 +10645,74 @@ PrefabInstance:
       propertyPath: feedback
       value: 
       objectReference: {fileID: 6221229152674952492}
+    - target: {fileID: 1847304695946221464, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 3951790498656600279, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
       propertyPath: feedback
       value: 
       objectReference: {fileID: 6412445055598625222}
+    - target: {fileID: 3951790498656600279, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 4243439079888218476, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
       propertyPath: feedback
       value: 
       objectReference: {fileID: 368162276987427795}
+    - target: {fileID: 4243439079888218476, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 5397354742995935177, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
       propertyPath: feedback
       value: 
       objectReference: {fileID: 5960040779608792029}
+    - target: {fileID: 5397354742995935177, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 5842875064561676167, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
       propertyPath: feedback
       value: 
       objectReference: {fileID: 4453809422660934236}
+    - target: {fileID: 5842875064561676167, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 6285756833690793248, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
       propertyPath: feedback
       value: 
       objectReference: {fileID: 7012572892518604044}
+    - target: {fileID: 6285756833690793248, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 6355050045218214505, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
       propertyPath: feedback
       value: 
       objectReference: {fileID: 7090365342620138875}
+    - target: {fileID: 6355050045218214505, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 6922508704174844396, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
       propertyPath: feedback
       value: 
       objectReference: {fileID: 575045857486371058}
+    - target: {fileID: 6922508704174844396, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 7340301973082102219, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
       propertyPath: feedback
       value: 
       objectReference: {fileID: 2788796941110354402}
+    - target: {fileID: 7340301973082102219, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 8967636341801974506, guid: 31bb87d5e88d9934abf7ce84b28c8bfa, type: 3}
       propertyPath: m_Name
       value: DockGrid
@@ -11256,6 +11292,14 @@ PrefabInstance:
       propertyPath: feedback
       value: 
       objectReference: {fileID: 6216895595980743625}
+    - target: {fileID: 1234853846337734208, guid: 1e8ab40d81ec4c8449eb154922fbf2e6, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
+    - target: {fileID: 1823970832225460400, guid: 1e8ab40d81ec4c8449eb154922fbf2e6, type: 3}
+      propertyPath: roomRoot
+      value: 
+      objectReference: {fileID: 3256810729672269135}
     - target: {fileID: 6878924938584817367, guid: 1e8ab40d81ec4c8449eb154922fbf2e6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.1288714

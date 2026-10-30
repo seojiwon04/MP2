@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class FishDispenser : MonoBehaviour
 {
+    public Transform roomRoot;
+
     public GameObject[] fishPrefabs;
     public Transform spawnPoint;
 
@@ -33,7 +35,8 @@ public class FishDispenser : MonoBehaviour
         currentFish = Instantiate(
             prefab,
             spawnPoint.position,
-            spawnPoint.rotation
+            spawnPoint.rotation,
+            roomRoot
         );
 
         FishStats stats = currentFish.GetComponent<FishStats>();
