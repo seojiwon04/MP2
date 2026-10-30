@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &10796475 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1794638405546859593, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
+  m_PrefabInstance: {fileID: 296577482}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &11896906
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -130,6 +135,10 @@ PrefabInstance:
     - target: {fileID: 196845784763979660, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
       propertyPath: m_Name
       value: YuyangsongScenePrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 196845784763979660, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3256810729672269135, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -253,40 +262,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7399917067514516695, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7399917067514516695, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2952306861513542188, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3333707178895334128, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 5157512261731062638, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4313387674197882410, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 2652869097616699356, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4994522392986610265, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 1847444567461459239, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 952988724253675676, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
 --- !u!1 &28851322
 GameObject:
@@ -526,17 +511,13 @@ MonoBehaviour:
 
     1 Road:
 
-    2 Wood + 2 Wool
-
-    2 Fish Meat + 2 IRON
+    2 Wood, 2 Wool, 2 Fish Meat
 
 
-    1
-    Civ:
+    1 Civ:
 
-    8 Wood + 8 Wool
-
-    8 Fish Meat + 8 IRON'
+    6
+    Wood, 6 Wool, 6 Fish Meat, 6 Iron'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -947,6 +928,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SheepFarmScenePrefab
       objectReference: {fileID: 0}
+    - target: {fileID: 1794638405546859593, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1929822645593528824, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4278190335
@@ -994,85 +979,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4812467327907685285, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8404964330851924559, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8600235446534583559, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3179009824662879256, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3449861227904938832, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 2441710291147002090, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 2458103959937671074, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3961202937173145959, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3821100874648466991, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 7358906777879647977, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 424401097750424447, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3444326831786193442, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3527302840487508923, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 713147169111764215, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 31213290400454892, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 1745001400806285029, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8187830686113502250, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4785363477187821256, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8801800929281032322, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 2762840838266388019, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 5666861296606311761, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8817644421057728154, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 6552207622761756882, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 3413022876396999153, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 8648311789338816211, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 195206401701585477, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2fc76c03b190c8b44afecccebcc283bb, type: 3}
 --- !u!1 &473333944
 GameObject:
@@ -1140,7 +1047,7 @@ MonoBehaviour:
 
     Fish Meat:
 
-    IRON: 0'
+    Iron: '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1238,7 +1145,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &511719765
 Transform:
   m_ObjectHideFlags: 0
@@ -1587,6 +1494,10 @@ PrefabInstance:
     - target: {fileID: 9042047577914601697, guid: 456e521a933a46b8af42fffa5d04dca2, type: 3}
       propertyPath: m_Name
       value: RishiOreRoom_Hub
+      objectReference: {fileID: 0}
+    - target: {fileID: 9042047577914601697, guid: 456e521a933a46b8af42fffa5d04dca2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1999,7 +1910,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &676648314
 Transform:
   m_ObjectHideFlags: 0
@@ -2305,6 +2216,7 @@ GameObject:
   - component: {fileID: 703289201}
   - component: {fileID: 703289205}
   - component: {fileID: 703289206}
+  - component: {fileID: 703289207}
   m_Layer: 0
   m_Name: Center Table
   m_TagString: Untagged
@@ -2427,10 +2339,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivBuilder
   inventory: {fileID: 837503297}
   feeder: {fileID: 703289206}
+  firstFeeder: {fileID: 703289207}
   errorPopup: {fileID: 534376583}
   aliveMaterial: {fileID: 2100000, guid: 06d243d99ec50524dad8edb9f53c82c3, type: 2}
   civPrefab: {fileID: 1022777709197593883, guid: f4b9cc0d8ae7bb9468f6f1d4dbd8e8b6, type: 3}
-  costText: {fileID: 100078079}
   platforms:
   - {fileID: 1514718620}
   - {fileID: 122876870}
@@ -2457,11 +2369,12 @@ MonoBehaviour:
   roadWood: 2
   roadWool: 2
   roadFishMeat: 2
-  roadIron: 2
-  civWood: 8
-  civWool: 8
-  civFishMeat: 8
-  civIron: 8
+  civWood: 6
+  civWool: 6
+  civFishMeat: 6
+  civIron: 6
+  instructionText: {fileID: 896243299}
+  OreRoom: {fileID: 575264360}
 --- !u!114 &703289206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2479,12 +2392,38 @@ MonoBehaviour:
   deadMaterial: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   hungerText: {fileID: 625516814}
   firstCiv: {fileID: 1449691019}
-  timeBetweenHunger: 9999
+  timeBetweenHunger: 180
   timeToFeed: 60
   foodAmount: 2
-  debugHunger: 1
+  debugHunger: 0
   debugTimeBetweenHunger: 20
   debugTimeToFeed: 10
+--- !u!114 &703289207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703289200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64b17968b2a98b844a18e814afc525ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FirstCivFeeder
+  builder: {fileID: 703289205}
+  feeder: {fileID: 703289206}
+  inventory: {fileID: 837503297}
+  hungerText: {fileID: 1343827593}
+  firstCiv: {fileID: 0}
+  instructionsText: {fileID: 896243299}
+  floorToWool: {fileID: 676648313}
+  SheepFarm: {fileID: 10796475}
+  floorToFish: {fileID: 511719764}
+  FishRoom: {fileID: 1904692914}
+  foodResource: Wood
+  foodName: Wood
+  foodAmount: 2
+  pauseHungerUntilFed: 1
 --- !u!1 &711475084 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1022777709197593883, guid: f4b9cc0d8ae7bb9468f6f1d4dbd8e8b6, type: 3}
@@ -2636,8 +2575,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HubInventory
   inventoryText: {fileID: 473333946}
-  startWithDebugResources: 1
-  debugAmount: 12
+  startWithDebugResources: 0
+  debugAmount: 100
   oreRoom: {fileID: 575264361}
   oreRoomPrefab: {fileID: 9042047577914601697, guid: 456e521a933a46b8af42fffa5d04dca2, type: 3}
   oreRoomPosition: {x: -40, y: 0, z: 0}
@@ -2742,7 +2681,7 @@ GameObject:
   - component: {fileID: 896243300}
   - component: {fileID: 896243299}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: instructions text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2765,7 +2704,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 800, y: 300}
+  m_SizeDelta: {x: 900, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &896243299
 MonoBehaviour:
@@ -2789,11 +2728,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Build and maintain your civilizations!
 
-    Click on an empty platform
-    or road with enough resources to build a city/road.
-
-    When a city needs a
-    resource, click on it with enough resource to keep it alive. '
+    First, we want to maintain
+    our civilizations. Obtain some wood from the wood room and click on the red platform
+    under the civilization to feed it. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3401,6 +3338,187 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 5.92}
   m_SizeDelta: {x: 1000, y: 300}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1343827592
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1343827595}
+  - component: {fileID: 1343827594}
+  - component: {fileID: 1343827593}
+  m_Layer: 0
+  m_Name: First Civ Hunger Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1343827593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1343827592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshPro
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: 2 Wood
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4281588223
+  m_fontColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 6
+  m_fontSizeBase: 6
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 0
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  _SortingLayer: 0
+  _SortingLayerID: 0
+  _SortingOrder: 0
+  m_hasFontAssetChanged: 0
+  m_renderer: {fileID: 1343827594}
+  m_maskType: 0
+--- !u!23 &1343827594
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1343827592}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!224 &1343827595
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1343827592}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: 3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -3, y: 3.75}
+  m_SizeDelta: {x: 6, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1449691016
 GameObject:
@@ -4129,6 +4247,11 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &1904692914 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 196845784763979660, guid: 4e0c1829d4c0b484b8c922cf0c6340e4, type: 3}
+  m_PrefabInstance: {fileID: 11896906}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1927562763
 GameObject:
   m_ObjectHideFlags: 0
@@ -4775,5 +4898,6 @@ SceneRoots:
   - {fileID: 11896906}
   - {fileID: 873465337}
   - {fileID: 625516816}
+  - {fileID: 1343827595}
   - {fileID: 534376586}
   - {fileID: 575264359}

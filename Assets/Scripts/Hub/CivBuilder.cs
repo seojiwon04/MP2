@@ -9,42 +9,38 @@ public class CivBuilder : MonoBehaviour
     public class Road
     {
         public Renderer road;
-        public Renderer civA; 
+        public Renderer civA;
         public Renderer civB;
     }
 
     public HubInventory inventory;
     public CivFeeder feeder;
+    public FirstCivFeeder firstFeeder;
     public SheepFarm.ErrorPopup errorPopup;
     public Material aliveMaterial;
     public GameObject civPrefab;
-    public TMP_Text costText;
 
     public Renderer[] platforms;
     public GameObject[] civs;
     public Road[] roads;
 
-    [Header("Road Cost")]
     public int roadWood = 2;
     public int roadWool = 2;
     public int roadFishMeat = 2;
-    public int roadIron = 2;
 
-    [Header("Civ Cost")]
-    public int civWood = 8;
-    public int civWool = 8;
-    public int civFishMeat = 8;
-    public int civIron = 8;
+    public int civWood = 6;
+    public int civWool = 6;
+    public int civFishMeat = 6;
+    public int civIron = 6;
+
+    public TMP_Text instructionText;
+    bool firstRoadBuilt = false;
+    bool firstCivBuilt = false;
+    bool won = false;
+    public GameObject OreRoom;
 
     private void Start()
     {
-        if (costText != null)
-        {
-            costText.text = "Cost:\n\n1 Road:\n" + roadWood + " Wood + " + roadWool + " Wool\n"
-                + roadFishMeat + " Fish Meat + " + roadIron + " IRON\n\n1 Civ:\n"
-                + civWood + " Wood + " + civWool + " Wool\n"
-                + civFishMeat + " Fish Meat + " + civIron + " IRON";
-        }
         if (inventory == null)
         {
             inventory = FindAnyObjectByType<HubInventory>();
@@ -52,6 +48,10 @@ public class CivBuilder : MonoBehaviour
         if (feeder == null)
         {
             feeder = GetComponent<CivFeeder>();
+        }
+        if (firstFeeder == null)
+        {
+            firstFeeder = GetComponent<FirstCivFeeder>();
         }
 
         foreach (Renderer platform in platforms)
@@ -93,19 +93,33 @@ public class CivBuilder : MonoBehaviour
             ShowError(road.road, "Road not connected to a civ!");
             return;
         }
-        if (!inventory.UseResources(roadWood, roadWool, roadFishMeat, roadIron))
+        if (!inventory.UseResources(roadWood, roadWool, roadFishMeat, 0))
         {
             ShowError(road.road, "Not enough resources!");
             return;
         }
 
         road.road.sharedMaterial = aliveMaterial;
+        if (!firstRoadBuilt)
+        {
+            firstRoadBuilt = true;
+            instructionText.text = "Great! Now, try to build a civilization! Collect some iron and gather enough resources for a civ. Click on an empty platform stemming from a road to build a civ.";
+            OreRoom.SetActive(true);
+        }
     }
 
     private void TryBuildCiv(Renderer platform)
     {
         if (IsBuilt(platform))
         {
+            if (won)
+            {
+                return;
+            }
+            if (firstFeeder != null && firstFeeder.TryFeed(platform))
+            {
+                return;
+            }
             if (feeder != null && feeder.TryFeed(platform))
             {
                 return;
@@ -131,6 +145,46 @@ public class CivBuilder : MonoBehaviour
         Vector3 position = new Vector3(top.center.x, top.max.y, top.center.z);
         int index = System.Array.IndexOf(platforms, platform);
         civs[index] = Instantiate(civPrefab, position, civPrefab.transform.rotation);
+
+        if (!firstCivBuilt)
+        {
+            firstCivBuilt = true;
+            instructionText.text = "Great! You built your first civilization! Build all 4 civilizations to complete the challenge. Remember, civs need to be kept alive!";
+        }
+
+        if (AllCivsBuilt())
+        {
+            Win();
+        }
+    }
+
+    private bool AllCivsBuilt()
+    {
+        foreach (Renderer platform in platforms)
+        {
+            if (!IsBuilt(platform))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void Win()
+    {
+        won = true;
+        instructionText.text = "You win!";
+
+        if (feeder != null)
+        {
+            feeder.enabled = false;
+            feeder.hungerText.gameObject.SetActive(false);
+        }
+        if (firstFeeder != null)
+        {
+            firstFeeder.enabled = false;
+            firstFeeder.hungerText.gameObject.SetActive(false);
+        }
     }
 
     public void ShowError(Renderer target, string message)
